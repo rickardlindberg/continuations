@@ -15,19 +15,21 @@
 
 // ENV
 
-struct pair {
-    char* key;
-    void* value;
+struct env_pair {
+    char * key;
+    void * value;
 };
 
 struct env {
-    struct pair *entries;
-    struct env *parent;
+    int size;
+    struct env_pair * entries;
+    struct env * parent;
 };
 
-struct env* env_create(int size, struct env * parent) {
+struct env * env_create(int size, struct env * parent) {
     struct env * env = (struct env *)malloc(sizeof(struct env));
-    env->entries = (struct pair *)malloc(sizeof(struct pair) * size);
+    env->size = size;
+    env->entries = (struct env_pair *)malloc(sizeof(struct env_pair) * size);
     env->parent = parent;
     return env;
 }
@@ -37,92 +39,98 @@ void env_destroy(struct env * env) {
     free(env);
 }
 
-void env_insert(struct env * env, int i, char* key, void* value) {
-    struct pair pair;
+void env_insert(struct env * env, int i, char * key, void * value) {
+    struct env_pair pair;
     pair.key = key;
     pair.value = value;
     env->entries[i] = pair;
 }
 
-void* lookup(struct env *env, char* name) {
+void * env_lookup(struct env * env, char * name) {
     int i;
-    int len = sizeof(env->entries)/sizeof(struct pair);
     if (env == NULL) {
         return NULL;
     }
-    for (i = 0; i < len; i++) {
-        if (strcmp(env->entries[i].key, name)) {
+    for (i = 0; i < env->size; i++) {
+        if (strcmp(env->entries[i].key, name) == 0) {
             return env->entries[i].value;
         }
     }
-    return lookup(env->parent, name);
+    return env_lookup(env->parent, name);
 }
 
 // FRAME
 
-struct fn {
-    void (*fn)(struct env *env);
-    struct env *env;
-};
-
-struct frame {
-    struct fn *fn;
-    void* args[10];
-};
-
-void* arg(struct frame *frame, int n) {
-    return frame->args[n];
-}
-
-// BUILTIN
-
-void builtin_exit(struct frame *frame) {
-    frame->fn = 0;
-}
-
-void builtin_print_number(struct frame *frame) {
-    printf("%d", (char*)arg(frame, 0));
-    frame->fn = arg(frame, 1);
-}
-
-void builtin_plus(struct frame *frame) {
-    int res = *(int*)arg(frame, 0) + *(int*)arg(frame, 1);
-    frame->fn = arg(frame, 2);
-    frame->args[0] = &res;
-}
-
-// COMPILED
-
-struct fn * compiled_main(struct env * env) {
-    struct fn * pythagoras = lookup(env, "pythagoras");
-    int n1 = 2;
-    int n2 = 4;
-    (struct fn *)(strucnt env *) anon = &compiled_anonymous_res;
-}
-
-struct fn * compiled_anonymous_res(struct env * env) {
-}
-
-struct fn * compiled_pythagoras(struct env * env) {
-}
-
-struct fn * compiled_anonymous_times_x(struct env * env) {
-}
-
-struct fn * compiled_anonymous_times_y(struct env * env) {
-}
-
-struct fn * compiled_anonymous_sum(struct env * env) {
-}
+//struct fn {
+//    void (*fn)(struct env *env);
+//    struct env *env;
+//};
+//
+//struct frame {
+//    struct fn *fn;
+//    void* args[10];
+//};
+//
+//void* arg(struct frame *frame, int n) {
+//    return frame->args[n];
+//}
+//
+//// BUILTIN
+//
+//void builtin_exit(struct frame *frame) {
+//    frame->fn = 0;
+//}
+//
+//void builtin_print_number(struct frame *frame) {
+//    printf("%d", (char*)arg(frame, 0));
+//    frame->fn = arg(frame, 1);
+//}
+//
+//void builtin_plus(struct frame *frame) {
+//    int res = *(int*)arg(frame, 0) + *(int*)arg(frame, 1);
+//    frame->fn = arg(frame, 2);
+//    frame->args[0] = &res;
+//}
+//
+//// COMPILED
+//
+//struct fn * compiled_main(struct env * env) {
+//    struct fn * pythagoras = env_lookup(env, "pythagoras");
+//    int n1 = 2;
+//    int n2 = 4;
+//    (struct fn *)(strucnt env *) anon = &compiled_anonymous_res;
+//}
+//
+//struct fn * compiled_anonymous_res(struct env * env) {
+//}
+//
+//struct fn * compiled_pythagoras(struct env * env) {
+//}
+//
+//struct fn * compiled_anonymous_times_x(struct env * env) {
+//}
+//
+//struct fn * compiled_anonymous_times_y(struct env * env) {
+//}
+//
+//struct fn * compiled_anonymous_sum(struct env * env) {
+//}
 
 // LOOP
 
+void test_env() {
+    char * v1 = "value1";
+    char * v2 = "value2";
+    struct env * global_env = env_create(2, NULL);
+    env_insert(global_env, 0, "key1", v1);
+    env_insert(global_env, 1, "key2", v2);
+    printf("RES = %s\n", (char *)env_lookup(global_env, "key1"));
+    printf("RES = %s\n", (char *)env_lookup(global_env, "key2"));
+    printf("RES = %s\n", (char *)env_lookup(global_env, "key3"));
+}
+
 int main() {
-    struct env * global_env = env_create(4, NULL);
-    env_insert(global_env, 0, "+", fn_create(&builtin_plus, global_env));
-    env_insert(global_env, 1, "printNumber", fn_create(&builtin_print_number, global_env));
-    env_insert(global_env, 2, "exit", fn_create(&builtin_exit, global_env));
-    env_insert(global_env, 3, "main", fn_create(&compiled_main, global_env));
+    test_env();
 
 //    struct env env;
 //
