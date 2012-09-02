@@ -59,6 +59,33 @@ void * env_lookup(struct env * env, char * name) {
     return env_lookup(env->parent, name);
 }
 
+// ARGUMENTS
+
+struct args {
+    int size;
+    void ** args;
+};
+
+struct args * args_create(int size) {
+    struct args * args = (struct args *)malloc(sizeof(struct args));
+    args->size = size;
+    args->args = (void **)malloc(sizeof(void *) * size);
+    return args;
+}
+
+void args_destroy(struct args * args) {
+    free(args->args);
+    free(args);
+}
+
+void args_insert(struct args * args, int i, void * value) {
+    args->args[i] = value;
+}
+
+void * args_get(struct args * args, int i) {
+    return args->args[i];
+}
+
 // FRAME
 
 //struct fn {
@@ -68,10 +95,10 @@ void * env_lookup(struct env * env, char * name) {
 //
 //struct frame {
 //    struct fn *fn;
-//    void* args[10];
+//    void * args[10];
 //};
 //
-//void* arg(struct frame *frame, int n) {
+//void * arg(struct frame *frame, int n) {
 //    return frame->args[n];
 //}
 //
@@ -82,12 +109,12 @@ void * env_lookup(struct env * env, char * name) {
 //}
 //
 //void builtin_print_number(struct frame *frame) {
-//    printf("%d", (char*)arg(frame, 0));
+//    printf("%d", (char *)arg(frame, 0));
 //    frame->fn = arg(frame, 1);
 //}
 //
 //void builtin_plus(struct frame *frame) {
-//    int res = *(int*)arg(frame, 0) + *(int*)arg(frame, 1);
+//    int res = *(int *)arg(frame, 0) + *(int *)arg(frame, 1);
 //    frame->fn = arg(frame, 2);
 //    frame->args[0] = &res;
 //}
@@ -121,16 +148,32 @@ void * env_lookup(struct env * env, char * name) {
 void test_env() {
     char * v1 = "value1";
     char * v2 = "value2";
-    struct env * global_env = env_create(2, NULL);
-    env_insert(global_env, 0, "key1", v1);
-    env_insert(global_env, 1, "key2", v2);
-    printf("RES = %s\n", (char *)env_lookup(global_env, "key1"));
-    printf("RES = %s\n", (char *)env_lookup(global_env, "key2"));
-    printf("RES = %s\n", (char *)env_lookup(global_env, "key3"));
+    struct env * env = env_create(2, NULL);
+    printf("Testing env\n");
+    env_insert(env, 0, "key1", v1);
+    env_insert(env, 1, "key2", v2);
+    printf("RES = %s\n", (char *)env_lookup(env, "key1"));
+    printf("RES = %s\n", (char *)env_lookup(env, "key2"));
+    printf("RES = %s\n", (char *)env_lookup(env, "key3"));
+    env_destroy(env);
+}
+
+void test_args() {
+    char * a1 = "arg 1";
+    char * a2 = "arg 2";
+    struct args * args = args_create(2);
+    printf("Testing args\n");
+    args_insert(args, 0, a1);
+    args_insert(args, 1, a2);
+    printf("RES = %s\n", (char *)args_get(args, 0));
+    printf("RES = %s\n", (char *)args_get(args, 1));
+    printf("RES = %s\n", (char *)args_get(args, 2));
+    args_destroy(args);
 }
 
 int main() {
     test_env();
+    test_args();
 
 //    struct env env;
 //
