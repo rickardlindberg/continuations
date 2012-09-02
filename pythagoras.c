@@ -94,54 +94,66 @@ void * args_get(Args args, int i) {
 
 // FUNCTION STUFF
 
-typedef struct call (*FnPtr)(Env env, Args args);
+typedef struct call * (*FnPtr)(Env env, Args args);
 
 struct fn {
     FnPtr fn_spec;
     Env env;
 };
 
-struct fn fn_new(FnPtr fn_spec, Env env) {
-    struct fn fn;
-    fn.fn_spec = fn_spec;
-    fn.env = env;
+typedef struct fn * Fn;
+
+Fn fn_create(FnPtr fn_spec, Env env) {
+    Fn fn = (struct fn *)malloc(sizeof(struct fn));
+    fn->fn_spec = fn_spec;
+    fn->env = env;
     return fn;
 };
 
+void fn_destroy(Fn fn) {
+    free(fn);
+}
+
 struct call {
-    struct fn fn;
-    struct args args;
+    Fn fn;
+    Args args;
 };
 
-struct call call_new(struct fn fn, struct args args) {
-    struct call call;
-    call.fn = fn;
-    call.args = args;
+typedef struct call * Call;
+
+Call call_create(Fn fn, Args args) {
+    Call call = (struct call *)malloc(sizeof(struct call));
+    call->fn = fn;
+    call->args = args;
     return call;
+}
+
+void call_destroy(Call call) {
+    free(call);
 }
 
 // BUILTIN
 
-//struct call * builtin_exit(Env env, Args args) {
-//    return NULL;
-//}
+Call builtin_exit(Env env, Args args) {
+    return NULL;
+}
 
-//struct call * builtin_print(Env env, Args args) {
-//    printf((char*)arg(frame, 0));
-//    frame->fn = arg(frame, 1);
-//}
+Call builtin_print(Env env, Args args) {
+    printf((char*)args_get(args, 0));
+    return call_create(fn_create(args_get(args, 1), env), args_create(0));
+}
 
 // COMPILED
 
-//struct call * compiled_main(Env env, Args args) {
-//    char* s = "hello world\n";
-//    Args args = args_create(2);
-//    // prepare args
-//    args_insert(args, 0, s);
-//    args_insert(args, 1, &builtin_exit);
-//    // prepare call
-//    &builtin_print
-//}
+Call compiled_main(Env env, Args in_args) {
+    char* s = "hello world\n";
+    Args args = args_create(2);
+    // prepare args
+    args_insert(args, 0, s);
+    args_insert(args, 1, env_lookup(env, "exit"));
+    // prepare call
+    return call_create(fn_create(env_lookup(env, "print"), env), args);
+}
 
 // TESTS
 
@@ -174,12 +186,21 @@ void test_args() {
 // LOOP
 
 int main() {
+    Env global_env = env_create(2, NULL);
+    env_insert(global_env, 0, "exit", &builtin_exit);
+    env_insert(global_env, 1, "print", &builtin_print);
+
+    Fn fn = fn_create(&compiled_main, global_env);
+    Args args = args_create(0);
+    Call call = call_create(fn, args);
+
     test_env();
     test_args();
 
-    Env global_env = env_create(0, NULL);
-
     while (1) {
-        return 1;
+        if (call == NULL) {
+            return 1;
+        }
+        call = (*call->fn->fn_spec)(call->fn->env, call->args);
     }
 }
