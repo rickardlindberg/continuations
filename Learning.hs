@@ -1,6 +1,3 @@
--- The purpose of this file is to get a feel for how continuation-passing style
--- works.
-
 pythagorasCont :: Float -> Float -> (Float -> IO ()) -> IO ()
 
 pythagorasCont x y k =

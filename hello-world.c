@@ -1,4 +1,4 @@
-// This is a manually compiled version of the hello world program:
+// Manually compiled version of hello world program:
 //
 // let main = \() ->
 //     print "Hello World" exit
