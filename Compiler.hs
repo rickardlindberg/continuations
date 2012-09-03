@@ -1,7 +1,8 @@
+import Control.Monad.Trans.State.Lazy as ST
 import qualified Text.ParserCombinators.Parsec.Token as P
-import Text.ParserCombinators.Parsec.Token (TokenParser, makeTokenParser)
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (haskellDef)
+import Text.ParserCombinators.Parsec.Token (TokenParser, makeTokenParser)
 
 main :: IO ()
 main = compile
@@ -15,15 +16,15 @@ compile = do
 
 -- Data for program
 
-data Program = Program [Function]
+data Program  = Program [Function]
 
 data Function = Function String Lambda
 
-data Lambda = Lambda [String] [Term]
+data Lambda   = Lambda [String] [Term]
 
-data Term = Identifier String
-          | Number Integer
-          | TermLambda Lambda
+data Term     = Identifier String
+              | Number     Integer
+              | TermLambda Lambda
 
 -- Parser
 
@@ -66,5 +67,24 @@ term     =  fmap Identifier identifier
 
 -- Code generator
 
+data GenState = GenState
+    { counter     :: Int
+    , globalNames :: [(String, Int)]
+    , finalCode   :: String
+    }
+
+writeLine :: String -> GenState -> GenState
+writeLine line gs = gs { finalCode = finalCode gs ++ line ++ "\n" }
+
 generateCode :: Program -> String
-generateCode p = "c code here..."
+generateCode program = finalCode $ ST.execState (outProgram program) (GenState 0 [] "")
+
+outProgram (Program fns) = do
+    ST.modify (writeLine "#import <stdio.h>")
+    ST.modify (writeLine "")
+    mapM_ outFunction fns
+outFunction (Function name lambda) = do
+    ST.modify (writeLine name)
+    outLambda lambda
+outLambda (Lambda args terms) = do
+    ST.modify (writeLine "l")
