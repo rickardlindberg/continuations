@@ -1,0 +1,9 @@
+let main = \() ->
+    pythagoras 2 4 \(res) ->
+        printNumber res exit
+
+let pythagoras = \(x, y, k) ->
+    times x x \(x2) ->
+        times y y \(y2) ->
+            plus x2 y2 \(sum) ->
+                sqrt sum k
