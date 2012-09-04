@@ -24,5 +24,5 @@ complex program: a program to calculate the length of one side of a triangle.
 I didn't manage to to find out what the compiled version of the pythagoras
 program would look like, so I decided to start writing the compiler instead. Of
 course I don't know exactly what code the compiler should generate, but it will
-give me a different way to think about the problem. (Compiler.hs,
-pythagoras.con)
+give me a different way to think about the problem. (Compiler.hs, runtime.h,
+runtime.c, pythagoras.con)
