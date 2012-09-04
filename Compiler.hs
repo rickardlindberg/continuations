@@ -1,3 +1,4 @@
+import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec
@@ -63,7 +64,6 @@ lambda   = do symbol "\\("
 term     =  fmap Identifier identifier
         <|> fmap Number     natural
         <|> fmap TermLambda lambda
-        <|> fmap TermLambda lambda
 
 -- Code generator
 
@@ -73,18 +73,77 @@ data GenState = GenState
     , finalCode   :: String
     }
 
-writeLine :: String -> GenState -> GenState
-writeLine line gs = gs { finalCode = finalCode gs ++ line ++ "\n" }
+writeLine line = ST.modify (doit line)
+    where doit line gs = gs { finalCode = finalCode gs ++ line ++ "\n" }
+
+addGlobalName name n = ST.modify (\s -> s { globalNames = (name, n):globalNames s })
+
+nextCounter = do
+    state <- get
+    ST.modify (\s -> s { counter = counter s + 1 })
+    return $ counter state
 
 generateCode :: Program -> String
 generateCode program = finalCode $ ST.execState (outProgram program) (GenState 0 [] "")
 
 outProgram (Program fns) = do
-    ST.modify (writeLine "#import <stdio.h>")
-    ST.modify (writeLine "")
+    writeLine "#import \"runtime.h\""
+    writeLine ""
     mapM_ outFunction fns
+    writeLine "int main() {"
+    writeLine "    Env env;"
+
+    writeLine ""
+
+    s <- get
+    let gn = globalNames s
+    writeLine $ "    env = create_env(NULL);"
+    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_binding(&fn_" ++ show n ++ ", env));") gn
+
+    writeLine ""
+
+    writeLine "    return 0;"
+    writeLine "}"
+
 outFunction (Function name lambda) = do
-    ST.modify (writeLine name)
-    outLambda lambda
+    n <- outLambda lambda
+    addGlobalName name n
+    return ()
+
 outLambda (Lambda args terms) = do
-    ST.modify (writeLine "l")
+    n <- nextCounter
+    terms <- mapM outTerm terms
+    writeLine $ "void fn_" ++ show n ++ "(...) {"
+
+    writeLine $ "    Args args;"
+    writeLine $ "    Binding binding;"
+    writeLine $ "    Env new_env;"
+
+    writeLine $ ""
+
+    writeLine $ "    new_env = create_env(env);"
+    forM (zip [0..] args) $ \(i, arg) -> do
+        writeLine $ "    env_insert(new_env, arg_get(args, " ++ show i ++ "));"
+
+    writeLine $ ""
+
+    writeLine $ "    binding = " ++ head terms ++ ";"
+
+    writeLine $ ""
+
+    writeLine $ "    args = create_args(" ++ show (length (tail terms)) ++ ");"
+    forM (zip [0..] (tail terms)) $ \(i, term) -> do
+        writeLine $ "    args_set(" ++ show i ++ ", " ++ term ++ ");"
+
+    writeLine $ ""
+
+    writeLine $ "    return unit_new(binding, args);"
+
+    writeLine $ "}"
+    writeLine $ ""
+    return n
+
+outTerm (Identifier s) = return $ "lookup(env, \"" ++ s ++ "\")"
+outTerm (Number     n) = return $ "const_int(" ++ show n ++ ")"
+outTerm (TermLambda l) = outLambda l >>= \n ->
+                         return $ "create_binding(&fn_" ++ show n ++ ", new_env)"
