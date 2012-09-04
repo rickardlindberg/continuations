@@ -6,8 +6,10 @@ struct pair {
 struct env {
     int size;
     struct pair * pairs;
+    struct env * parent;
 };
 
 typedef struct env * Env;
 
 Env create_env(Env parent);
+void * env_lookup(Env env, char * key);

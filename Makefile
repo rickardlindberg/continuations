@@ -9,5 +9,5 @@ hello-world: hello-world.c
 compiler: pythagoras.con Compiler.hs runtime.h runtime.c
 	cat pythagoras.con | runhaskell Compiler.hs > compiler.c && gcc -o compiler compiler.c
 
-test-runtime: test-runtime.c
-	gcc -o test-runtime test-runtime.c
+test-runtime: test-runtime.c runtime.c
+	gcc -o test-runtime test-runtime.c runtime.c
