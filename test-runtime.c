@@ -19,7 +19,21 @@ void test_env() {
     //printf("%s\n", env_lookup(env2, "foobar"));
 }
 
+void test_args() {
+    Args args = create_args(2);
+    char * value1 = "arg1";
+    char * value2 = "arg2";
+
+    args_set(args, 0, value1);
+    args_set(args, 1, value2);
+
+    printf("%s\n", args_get(args, 0));
+    printf("%s\n", args_get(args, 1));
+    //printf("%s\n", args_get(args, 2));
+}
+
 int main() {
     test_env();
+    test_args();
     return 0;
 }
