@@ -124,7 +124,7 @@ outLambda (Lambda args terms) = do
 
     writeLine $ "    new_env = create_env(env);"
     forM (zip [0..] args) $ \(i, arg) -> do
-        writeLine $ "    env_insert(new_env, arg_get(args, " ++ show i ++ "));"
+        writeLine $ "    env_insert(new_env, args_get(args, " ++ show i ++ "));"
 
     writeLine $ ""
 

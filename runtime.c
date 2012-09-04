@@ -48,3 +48,29 @@ void * args_get(Args args, int i) {
 void args_set(Args args, int i, void * value) {
     args->args[i] = value;
 }
+
+// Binding
+
+Binding create_binding(FnSpec fn_spec, Env env) {
+    Binding binding = (Binding)malloc(sizeof(struct binding));
+    binding->fn_spec = fn_spec;
+    binding->env = env;
+    return binding;
+}
+
+// Call
+
+Call create_call(Binding binding, Args args) {
+    Call call = (Call)malloc(sizeof(struct call));
+    call->binding = binding;
+    call->args = args;
+    return call;
+}
+
+// Constants
+
+void * const_int(int i) {
+    int * value = (int *)malloc(sizeof(int));
+    *value = i;
+    return (void *)value;
+}
