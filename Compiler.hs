@@ -94,17 +94,27 @@ outProgram (Program fns) = do
     mapM_ outFunction fns
     writeLine "int main() {"
     writeLine "    Env env;"
+    writeLine "    Call call;"
 
     writeLine ""
 
     s <- get
     let gn = globalNames s
+    let bn = ["times", "plus", "sqrt", "printNumber", "exit"]
     writeLine $ "    env = create_env(NULL);"
     mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_binding(&fn_" ++ show n ++ ", env));") gn
+    mapM_ (\name -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_binding(&builtin_" ++ name ++ ", env));") bn
 
     writeLine ""
 
-    writeLine "    printf(\"compiled program\\n\");"
+    writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
+
+    writeLine ""
+
+    writeLine "    while (call != NULL) {"
+    writeLine "        call = call->binding->fn_spec(call->binding->env, call->args);"
+    writeLine "    }"
+
     writeLine "    return 0;"
     writeLine "}"
 
@@ -126,7 +136,7 @@ outLambda (Lambda args terms) = do
 
     writeLine $ "    new_env = create_env(env);"
     forM (zip [0..] args) $ \(i, arg) -> do
-        writeLine $ "    env_insert(new_env, args_get(args, " ++ show i ++ "));"
+        writeLine $ "    env_insert(new_env, \"" ++ arg ++ "\", args_get(args, " ++ show i ++ "));"
 
     writeLine $ ""
 
@@ -146,7 +156,7 @@ outLambda (Lambda args terms) = do
     writeLine $ ""
     return n
 
-outTerm (Identifier s) = return $ "env_lookup(env, \"" ++ s ++ "\")"
+outTerm (Identifier s) = return $ "env_lookup(new_env, \"" ++ s ++ "\")"
 outTerm (Number     n) = return $ "const_int(" ++ show n ++ ")"
 outTerm (TermLambda l) = outLambda l >>= \n ->
                          return $ "create_binding(&fn_" ++ show n ++ ", new_env)"

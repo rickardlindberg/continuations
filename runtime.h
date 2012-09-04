@@ -52,3 +52,15 @@ Call create_call(Binding binding, Args args);
 // Constants
 
 void * const_int(int i);
+
+// Built-ins
+
+Call builtin_times(Env env, Args args);
+
+// Built-ins
+
+Call builtin_times(Env env, Args args);
+Call builtin_plus(Env env, Args args);
+Call builtin_sqrt(Env env, Args args);
+Call builtin_printNumber(Env env, Args args);
+Call builtin_exit(Env env, Args args);

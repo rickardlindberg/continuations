@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "runtime.h"
 
 // Env
@@ -22,6 +24,7 @@ void env_insert(Env env, char * key, void * value) {
 void * env_lookup(Env env, char * key) {
     int i;
     if (env == NULL) {
+        printf("Did not find key '%s'\n", key);
         return NULL;
     }
     for (i = 0; i < env->size; i++) {
@@ -73,4 +76,44 @@ void * const_int(int i) {
     int * value = (int *)malloc(sizeof(int));
     *value = i;
     return (void *)value;
+}
+
+// Built-ins
+
+Call builtin_times(Env env, Args args) {
+    int * left = (int *)args_get(args, 0);
+    int * right = (int *)args_get(args, 1);
+    Binding k = (Binding)args_get(args, 2);
+    Args next_args = create_args(1);
+    args_set(next_args, 0, const_int(*left * *right));
+    return create_call(k, next_args);
+}
+
+Call builtin_plus(Env env, Args args) {
+    int * left = (int *)args_get(args, 0);
+    int * right = (int *)args_get(args, 1);
+    Binding k = (Binding)args_get(args, 2);
+    Args next_args = create_args(1);
+    args_set(next_args, 0, const_int(*left + *right));
+    return create_call(k, next_args);
+}
+
+Call builtin_sqrt(Env env, Args args) {
+    int * n = (int *)args_get(args, 0);
+    double d = (double)*n;
+    Binding k = (Binding)args_get(args, 1);
+    Args next_args = create_args(1);
+    args_set(next_args, 0, const_int((int)sqrt(d)));
+    return create_call(k, next_args);
+}
+
+Call builtin_printNumber(Env env, Args args) {
+    int * n = (int *)args_get(args, 0);
+    Binding k = (Binding)args_get(args, 1);
+    printf("%d\n", *n);
+    return create_call(k, create_args(0));
+}
+
+Call builtin_exit(Env env, Args args) {
+    return NULL;
 }
