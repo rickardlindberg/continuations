@@ -87,7 +87,8 @@ generateCode :: Program -> String
 generateCode program = finalCode $ ST.execState (outProgram program) (GenState 0 [] "")
 
 outProgram (Program fns) = do
-    writeLine "#import \"runtime.h\""
+    writeLine "#include <stdlib.h>"
+    writeLine "#include \"runtime.h\""
     writeLine ""
     mapM_ outFunction fns
     writeLine "int main() {"
@@ -113,9 +114,9 @@ outFunction (Function name lambda) = do
 outLambda (Lambda args terms) = do
     n <- nextCounter
     terms <- mapM outTerm terms
-    writeLine $ "void fn_" ++ show n ++ "(...) {"
+    writeLine $ "Call fn_" ++ show n ++ "(Env env, Args args) {"
 
-    writeLine $ "    Args args;"
+    writeLine $ "    Args next_args;"
     writeLine $ "    Binding binding;"
     writeLine $ "    Env new_env;"
 
@@ -127,23 +128,23 @@ outLambda (Lambda args terms) = do
 
     writeLine $ ""
 
-    writeLine $ "    binding = " ++ head terms ++ ";"
+    writeLine $ "    binding = (Binding)" ++ head terms ++ ";"
 
     writeLine $ ""
 
-    writeLine $ "    args = create_args(" ++ show (length (tail terms)) ++ ");"
+    writeLine $ "    next_args = create_args(" ++ show (length (tail terms)) ++ ");"
     forM (zip [0..] (tail terms)) $ \(i, term) -> do
-        writeLine $ "    args_set(" ++ show i ++ ", " ++ term ++ ");"
+        writeLine $ "    args_set(next_args, " ++ show i ++ ", " ++ term ++ ");"
 
     writeLine $ ""
 
-    writeLine $ "    return unit_new(binding, args);"
+    writeLine $ "    return create_call(binding, next_args);"
 
     writeLine $ "}"
     writeLine $ ""
     return n
 
-outTerm (Identifier s) = return $ "lookup(env, \"" ++ s ++ "\")"
+outTerm (Identifier s) = return $ "env_lookup(env, \"" ++ s ++ "\")"
 outTerm (Number     n) = return $ "const_int(" ++ show n ++ ")"
 outTerm (TermLambda l) = outLambda l >>= \n ->
                          return $ "create_binding(&fn_" ++ show n ++ ", new_env)"
