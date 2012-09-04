@@ -87,6 +87,7 @@ generateCode :: Program -> String
 generateCode program = finalCode $ ST.execState (outProgram program) (GenState 0 [] "")
 
 outProgram (Program fns) = do
+    writeLine "#include <stdio.h>"
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
     writeLine ""
@@ -103,6 +104,7 @@ outProgram (Program fns) = do
 
     writeLine ""
 
+    writeLine "    printf(\"compiled program\\n\");"
     writeLine "    return 0;"
     writeLine "}"
 
