@@ -72,8 +72,8 @@ Call create_call(Binding binding, Args args) {
 
 // Constants
 
-void * const_int(int i) {
-    int * value = (int *)malloc(sizeof(int));
+void * const_number(double i) {
+    double * value = (double *)malloc(sizeof(double));
     *value = i;
     return (void *)value;
 }
@@ -81,36 +81,35 @@ void * const_int(int i) {
 // Built-ins
 
 Call builtin_times(Env env, Args args) {
-    int * left = (int *)args_get(args, 0);
-    int * right = (int *)args_get(args, 1);
+    double * left = (double *)args_get(args, 0);
+    double * right = (double *)args_get(args, 1);
     Binding k = (Binding)args_get(args, 2);
     Args next_args = create_args(1);
-    args_set(next_args, 0, const_int(*left * *right));
+    args_set(next_args, 0, const_number((*left) * (*right)));
     return create_call(k, next_args);
 }
 
 Call builtin_plus(Env env, Args args) {
-    int * left = (int *)args_get(args, 0);
-    int * right = (int *)args_get(args, 1);
+    double * left = (double *)args_get(args, 0);
+    double * right = (double *)args_get(args, 1);
     Binding k = (Binding)args_get(args, 2);
     Args next_args = create_args(1);
-    args_set(next_args, 0, const_int(*left + *right));
+    args_set(next_args, 0, const_number((*left) + (*right)));
     return create_call(k, next_args);
 }
 
 Call builtin_sqrt(Env env, Args args) {
-    int * n = (int *)args_get(args, 0);
-    double d = (double)*n;
+    double * n = (double *)args_get(args, 0);
     Binding k = (Binding)args_get(args, 1);
     Args next_args = create_args(1);
-    args_set(next_args, 0, const_int((int)sqrt(d)));
+    args_set(next_args, 0, const_number(sqrt(*n)));
     return create_call(k, next_args);
 }
 
 Call builtin_printNumber(Env env, Args args) {
-    int * n = (int *)args_get(args, 0);
+    double * n = (double *)args_get(args, 0);
     Binding k = (Binding)args_get(args, 1);
-    printf("%d\n", *n);
+    printf("%f\n", *n);
     return create_call(k, create_args(0));
 }
 

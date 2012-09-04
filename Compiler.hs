@@ -157,6 +157,6 @@ outLambda (Lambda args terms) = do
     return n
 
 outTerm (Identifier s) = return $ "env_lookup(new_env, \"" ++ s ++ "\")"
-outTerm (Number     n) = return $ "const_int(" ++ show n ++ ")"
+outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
 outTerm (TermLambda l) = outLambda l >>= \n ->
                          return $ "create_binding(&fn_" ++ show n ++ ", new_env)"

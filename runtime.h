@@ -51,7 +51,7 @@ Call create_call(Binding binding, Args args);
 
 // Constants
 
-void * const_int(int i);
+void * const_number(double i);
 
 // Built-ins
 
