@@ -21,8 +21,14 @@ complex program: a program to calculate the length of one side of a triangle.
 
 # Step 4
 
-I didn't manage to to find out what the compiled version of the pythagoras
+I didn't manage to to figure out what the compiled version of the pythagoras
 program would look like, so I decided to start writing the compiler instead. Of
-course I don't know exactly what code the compiler should generate, but it will
-give me a different way to think about the problem. (Compiler.hs, runtime.h,
-runtime.c, pythagoras.con)
+course I didn't know exactly what code the compiler should generate, but it
+gave me a different way to think about the problem. (Compiler.hs, runtime.h,
+runtime.c, pythagoras.con, test-runtime.c)
+
+# Step 5
+
+I managed to get the compiler working, but I did not take care of garbage
+collection. If you run a compiled program long enough, it will run out of
+memory.
