@@ -32,3 +32,9 @@ runtime.c, pythagoras.con, test-runtime.c)
 I managed to get the compiler working, but I did not take care of garbage
 collection. If you run a compiled program long enough, it will run out of
 memory.
+
+# Ideas for compiler
+
+* Generate implementation of built in functions
+* Introduce syntactic sugar (maybe let expressions)
+* Perform type checking
