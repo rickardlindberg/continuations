@@ -120,8 +120,10 @@ outLambda (Lambda args terms) = do
 outTerm :: Term -> ST.State AccumulatedCode String
 outTerm (Identifier s) = return $ "env_lookup(new_env, \"" ++ s ++ "\")"
 outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
-outTerm (TermLambda l) = outLambda l >>= \n ->
-                         return $ "create_binding(&fn_" ++ show n ++ ", new_env)"
+outTerm (TermLambda l) = do
+    n <- outLambda l
+    writeLine ""
+    return $ "create_binding(&fn_" ++ show n ++ ", new_env)"
 
 data AccumulatedCode = AccumulatedCode
     { counter     :: Int

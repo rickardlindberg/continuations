@@ -56,10 +56,6 @@ void * const_number(double i);
 // Built-ins
 
 Call builtin_times(Env env, Args args);
-
-// Built-ins
-
-Call builtin_times(Env env, Args args);
 Call builtin_plus(Env env, Args args);
 Call builtin_sqrt(Env env, Args args);
 Call builtin_printNumber(Env env, Args args);
