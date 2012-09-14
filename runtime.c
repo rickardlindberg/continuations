@@ -10,6 +10,7 @@ Env create_env(Env parent) {
     env->size = 0;
     env->pairs = (struct pair *)malloc(env->size * sizeof(struct pair));
     env->parent = parent;
+    return env;
 }
 
 void env_insert(Env env, char * key, void * value) {
