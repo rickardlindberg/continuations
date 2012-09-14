@@ -1,6 +1,6 @@
 typedef struct env * Env;
 typedef struct args * Args;
-typedef struct binding * Binding;
+typedef struct closure * Closure;
 typedef struct call * Call;
 typedef Call (*FnSpec)(Env env, Args args);
 
@@ -31,23 +31,23 @@ Args create_args(int size);
 void * args_get(Args args, int i);
 void args_set(Args args, int i, void * value);
 
-// Binding
+// Closure
 
-struct binding {
+struct closure {
     FnSpec fn_spec;
     Env env;
 };
 
-Binding create_binding(FnSpec fn_spec, Env env);
+Closure create_closure(FnSpec fn_spec, Env env);
 
 // Call
 
 struct call {
-    Binding binding;
+    Closure closure;
     Args args;
 };
 
-Call create_call(Binding binding, Args args);
+Call create_call(Closure closure, Args args);
 
 // Constants
 

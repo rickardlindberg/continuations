@@ -53,20 +53,20 @@ void args_set(Args args, int i, void * value) {
     args->args[i] = value;
 }
 
-// Binding
+// Closure
 
-Binding create_binding(FnSpec fn_spec, Env env) {
-    Binding binding = (Binding)malloc(sizeof(struct binding));
-    binding->fn_spec = fn_spec;
-    binding->env = env;
-    return binding;
+Closure create_closure(FnSpec fn_spec, Env env) {
+    Closure closure = (Closure)malloc(sizeof(struct closure));
+    closure->fn_spec = fn_spec;
+    closure->env = env;
+    return closure;
 }
 
 // Call
 
-Call create_call(Binding binding, Args args) {
+Call create_call(Closure closure, Args args) {
     Call call = (Call)malloc(sizeof(struct call));
-    call->binding = binding;
+    call->closure = closure;
     call->args = args;
     return call;
 }
@@ -84,7 +84,7 @@ void * const_number(double i) {
 Call builtin_times(Env env, Args args) {
     double * left = (double *)args_get(args, 0);
     double * right = (double *)args_get(args, 1);
-    Binding k = (Binding)args_get(args, 2);
+    Closure k = (Closure)args_get(args, 2);
     Args next_args = create_args(1);
     args_set(next_args, 0, const_number((*left) * (*right)));
     return create_call(k, next_args);
@@ -93,7 +93,7 @@ Call builtin_times(Env env, Args args) {
 Call builtin_plus(Env env, Args args) {
     double * left = (double *)args_get(args, 0);
     double * right = (double *)args_get(args, 1);
-    Binding k = (Binding)args_get(args, 2);
+    Closure k = (Closure)args_get(args, 2);
     Args next_args = create_args(1);
     args_set(next_args, 0, const_number((*left) + (*right)));
     return create_call(k, next_args);
@@ -101,7 +101,7 @@ Call builtin_plus(Env env, Args args) {
 
 Call builtin_sqrt(Env env, Args args) {
     double * n = (double *)args_get(args, 0);
-    Binding k = (Binding)args_get(args, 1);
+    Closure k = (Closure)args_get(args, 1);
     Args next_args = create_args(1);
     args_set(next_args, 0, const_number(sqrt(*n)));
     return create_call(k, next_args);
@@ -109,7 +109,7 @@ Call builtin_sqrt(Env env, Args args) {
 
 Call builtin_printNumber(Env env, Args args) {
     double * n = (double *)args_get(args, 0);
-    Binding k = (Binding)args_get(args, 1);
+    Closure k = (Closure)args_get(args, 1);
     printf("%f\n", *n);
     return create_call(k, create_args(0));
 }

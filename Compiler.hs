@@ -76,13 +76,13 @@ outProgram (Program fns) = do
     s <- get
     let gn = globalNames s
     let bn = ["times", "plus", "sqrt", "printNumber", "exit"]
-    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_binding(&fn_" ++ show n ++ ", env));") gn
-    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_binding(&builtin_" ++ name ++ ", env));") bn
+    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&fn_" ++ show n ++ ", env));") gn
+    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ name ++ ", env));") bn
     writeLine ""
     writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
     writeLine ""
     writeLine "    while (call != NULL) {"
-    writeLine "        call = call->binding->fn_spec(call->binding->env, call->args);"
+    writeLine "        call = call->closure->fn_spec(call->closure->env, call->args);"
     writeLine "    }"
     writeLine ""
     writeLine "    return 0;"
@@ -100,20 +100,20 @@ outLambda (Lambda args terms) = do
     terms <- mapM outTerm terms
     writeLine $ "Call fn_" ++ show n ++ "(Env env, Args args) {"
     writeLine $ "    Args next_args;"
-    writeLine $ "    Binding binding;"
+    writeLine $ "    Closure closure;"
     writeLine $ "    Env new_env;"
     writeLine $ ""
     writeLine $ "    new_env = create_env(env);"
     forM (zip [0..] args) $ \(i, arg) -> do
         writeLine $ "    env_insert(new_env, \"" ++ arg ++ "\", args_get(args, " ++ show i ++ "));"
     writeLine $ ""
-    writeLine $ "    binding = (Binding)" ++ head terms ++ ";"
+    writeLine $ "    closure = (Closure)" ++ head terms ++ ";"
     writeLine $ ""
     writeLine $ "    next_args = create_args(" ++ show (length (tail terms)) ++ ");"
     forM (zip [0..] (tail terms)) $ \(i, term) -> do
         writeLine $ "    args_set(next_args, " ++ show i ++ ", " ++ term ++ ");"
     writeLine $ ""
-    writeLine $ "    return create_call(binding, next_args);"
+    writeLine $ "    return create_call(closure, next_args);"
     writeLine $ "}"
     return n
 
@@ -123,7 +123,7 @@ outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
 outTerm (TermLambda l) = do
     n <- outLambda l
     writeLine ""
-    return $ "create_binding(&fn_" ++ show n ++ ", new_env)"
+    return $ "create_closure(&fn_" ++ show n ++ ", new_env)"
 
 data AccumulatedCode = AccumulatedCode
     { counter     :: Int
