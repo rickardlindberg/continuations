@@ -14,32 +14,9 @@ outProgram (Program fns) = do
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
     writeLine ""
-    forM fns $ \fn -> do
-        outFunction fn
-        writeLine ""
-    writeLine "int main() {"
-    writeLine "    Env env;"
-    writeLine "    Call call, next_call;"
+    outList fns outFunction (writeLine "")
     writeLine ""
-    writeLine "    env = create_env(NULL);"
-    s <- get
-    let gn = globalNames s
-    let bn = ["times", "plus", "sqrt", "printNumber", "exit"]
-    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&fn_" ++ show n ++ ", env));") gn
-    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ name ++ ", env));") bn
-    writeLine ""
-    writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
-    writeLine ""
-    writeLine "    while (call != NULL) {"
-    writeLine "        next_call = call->closure->fn_spec(call->closure->env, call->args);"
-    writeLine "        free_ref_countable(call);"
-    writeLine "        call = next_call;"
-    writeLine "    }"
-    writeLine ""
-    writeLine "    free_ref_countable(env);"
-    writeLine ""
-    writeLine "    return 0;"
-    writeLine "}"
+    outMain
 
 outFunction :: Function -> ST.State AccumulatedCode ()
 outFunction (Function name lambda) = do
@@ -79,3 +56,29 @@ outTerm (TermLambda l) = do
     n <- outLambda l
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", new_env)"
+
+outMain :: ST.State AccumulatedCode ()
+outMain = do
+    writeLine "int main() {"
+    writeLine "    Env env;"
+    writeLine "    Call call, next_call;"
+    writeLine ""
+    writeLine "    env = create_env(NULL);"
+    s <- get
+    let gn = globalNames s
+    let bn = ["times", "plus", "sqrt", "printNumber", "exit"]
+    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&fn_" ++ show n ++ ", env));") gn
+    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ name ++ ", env));") bn
+    writeLine ""
+    writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
+    writeLine ""
+    writeLine "    while (call != NULL) {"
+    writeLine "        next_call = call->closure->fn_spec(call->closure->env, call->args);"
+    writeLine "        free_ref_countable(call);"
+    writeLine "        call = next_call;"
+    writeLine "    }"
+    writeLine ""
+    writeLine "    free_ref_countable(env);"
+    writeLine ""
+    writeLine "    return 0;"
+    writeLine "}"

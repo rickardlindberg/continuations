@@ -5,6 +5,11 @@ import Control.Monad.Trans.State.Lazy as ST
 runGenerator :: ST.State AccumulatedCode a -> String
 runGenerator m = finalCode $ ST.execState m (AccumulatedCode 0 [] "")
 
+outList :: [a] -> (a -> ST.State AccumulatedCode ()) -> ST.State AccumulatedCode () -> ST.State AccumulatedCode ()
+outList []     item separator = return ()
+outList [x]    item separator = item x
+outList (x:xs) item separator = item x >> separator >> outList xs item separator
+
 data AccumulatedCode = AccumulatedCode
     { counter     :: Int
     , globalNames :: [(String, Int)]
