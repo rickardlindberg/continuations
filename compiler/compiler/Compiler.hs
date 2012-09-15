@@ -1,10 +1,8 @@
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import Data
-import qualified Text.ParserCombinators.Parsec.Token as P
-import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Language (haskellDef)
-import Text.ParserCombinators.Parsec.Token (TokenParser, makeTokenParser)
+import Parser
+import Text.ParserCombinators.Parsec (parse)
 
 main :: IO ()
 main = do
@@ -12,36 +10,6 @@ main = do
     case parse translate "" input of
         Left  error   -> print error
         Right program -> putStr (generateCode program)
-
--- Parser
-
-translate :: Parser Program
-translate  =  do whiteSpace
-                 p <- program
-                 eof
-                 return p
-program    =  fmap Program (many function)
-function   =  do reserved "let"
-                 name <- identifier
-                 symbol "="
-                 l <- lambda
-                 return (Function name l)
-lambda     =  do symbol "\\("
-                 args <- sepBy identifier (symbol ",")
-                 symbol ")"
-                 symbol "->"
-                 terms <- many1 term
-                 return (Lambda args terms)
-term       =  fmap Identifier identifier
-          <|> fmap Number     natural
-          <|> fmap TermLambda lambda
-
-whiteSpace = P.whiteSpace lexer
-symbol     = P.symbol     lexer
-natural    = P.natural    lexer
-identifier = P.identifier lexer
-reserved   = P.reserved   lexer
-lexer      = makeTokenParser $ haskellDef { P.reservedNames = ["let"] }
 
 -- Code generator
 
