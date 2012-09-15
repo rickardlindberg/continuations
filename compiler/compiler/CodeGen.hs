@@ -4,6 +4,7 @@ import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import Data
+import Data.String.Utils
 
 generateCode :: Program -> String
 generateCode = runGenerator . outProgram
@@ -66,9 +67,9 @@ outMain = do
     writeLine "    env = create_env(NULL);"
     s <- get
     let gn = globalNames s
-    let bn = ["times", "plus", "sqrt", "printNumber", "exit"]
+    let bn = ["times", "plus", "minus", "sqrt", "printNumber", "exit", "isZero?"]
     mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&fn_" ++ show n ++ ", env));") gn
-    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ name ++ ", env));") bn
+    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ (replace "?" "P" name) ++ ", env));") bn
     writeLine ""
     writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
     writeLine ""

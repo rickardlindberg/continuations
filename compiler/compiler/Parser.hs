@@ -26,10 +26,15 @@ lambda     =  do symbol "\\("
 term       =  fmap Identifier identifier
           <|> fmap Number     natural
           <|> fmap TermLambda lambda
+          <|> parens term
 
 whiteSpace = P.whiteSpace lexer
 symbol     = P.symbol     lexer
 natural    = P.natural    lexer
 identifier = P.identifier lexer
 reserved   = P.reserved   lexer
-lexer      = makeTokenParser $ haskellDef { P.reservedNames = ["let"] }
+parens     = P.parens     lexer
+lexer      = makeTokenParser $ haskellDef
+             { P.reservedNames = ["let"]
+             , P.identLetter   = P.identLetter haskellDef <|> char '?'
+             }

@@ -94,6 +94,8 @@ static void free_number(void * number);
 
 Call builtin_times(Env env, Args args);
 Call builtin_plus(Env env, Args args);
+Call builtin_minus(Env env, Args args);
 Call builtin_sqrt(Env env, Args args);
 Call builtin_printNumber(Env env, Args args);
 Call builtin_exit(Env env, Args args);
+Call builtin_isZeroP(Env env, Args args);

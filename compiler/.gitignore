@@ -1,6 +1,8 @@
 /tests/test-runtime
 /examples/pythagoras
 /examples/pythagoras.c
+/examples/odd-even
+/examples/odd-even.c
 /compiler/*.o
 /compiler/*.hi
 /compiler/Compiler
