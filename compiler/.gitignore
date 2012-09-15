@@ -1,3 +1,6 @@
 /tests/test-runtime
 /examples/pythagoras
 /examples/pythagoras.c
+/compiler/*.o
+/compiler/*.hi
+/compiler/Compiler
