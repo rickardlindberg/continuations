@@ -1,11 +1,12 @@
 module CodeGen where
 
+import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import Data
 
 generateCode :: Program -> String
-generateCode program = finalCode $ ST.execState (outProgram program) (AccumulatedCode 0 [] "")
+generateCode = runGenerator . outProgram
 
 outProgram :: Program -> ST.State AccumulatedCode ()
 outProgram (Program fns) = do
@@ -78,21 +79,3 @@ outTerm (TermLambda l) = do
     n <- outLambda l
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", new_env)"
-
-data AccumulatedCode = AccumulatedCode
-    { counter     :: Int
-    , globalNames :: [(String, Int)]
-    , finalCode   :: String
-    }
-
-writeLine :: String -> ST.State AccumulatedCode ()
-writeLine line = ST.modify (\s -> s { finalCode = finalCode s ++ line ++ "\n" })
-
-addGlobalName :: String -> Int -> ST.State AccumulatedCode ()
-addGlobalName name n = ST.modify (\s -> s { globalNames = (name, n):globalNames s })
-
-nextCounter :: ST.State AccumulatedCode Int
-nextCounter = do
-    state <- get
-    ST.modify (\s -> s { counter = counter s + 1 })
-    return $ counter state
