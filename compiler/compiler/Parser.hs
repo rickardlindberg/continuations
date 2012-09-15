@@ -36,5 +36,5 @@ reserved   = P.reserved   lexer
 parens     = P.parens     lexer
 lexer      = makeTokenParser $ haskellDef
              { P.reservedNames = ["let"]
-             , P.identLetter   = P.identLetter haskellDef <|> char '?'
+             , P.identLetter   = P.identLetter haskellDef <|> char '?' <|> char '-'
              }

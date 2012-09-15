@@ -1,7 +1,10 @@
 let main = \() ->
-    even? 5 \(bool) -> bool
-        (\() -> printNumber 0 exit)
-        (\() -> printNumber 1 exit)
+    print-odd-even 5 exit
+
+let print-odd-even = \(n, k) ->
+    even? n \(bool) -> bool
+        (\() -> printNumber 0 k)
+        (\() -> printNumber 1 k)
 
 let even? = \(n, k) -> isZero? n
     (\() -> k True)
@@ -11,7 +14,7 @@ let odd? = \(n, k) -> isZero? n
     (\() -> k False)
     (\() -> dec n \(res) -> even? res k)
 
-let True  = \(f1, f2) -> f1
+let True = \(f1, f2) -> f1
 
 let False = \(f1, f2) -> f2
 
