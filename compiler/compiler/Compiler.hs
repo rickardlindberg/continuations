@@ -1,5 +1,6 @@
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
+import Data
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (haskellDef)
@@ -11,18 +12,6 @@ main = do
     case parse translate "" input of
         Left  error   -> print error
         Right program -> putStr (generateCode program)
-
--- Data for program
-
-data Program  = Program [Function]
-
-data Function = Function String Lambda
-
-data Lambda   = Lambda [String] [Term]
-
-data Term     = Identifier String
-              | Number     Integer
-              | TermLambda Lambda
 
 -- Parser
 
