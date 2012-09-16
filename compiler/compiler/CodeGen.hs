@@ -4,13 +4,19 @@ import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import Data
-import Data.String.Utils
 
 generateCode :: Program -> String
 generateCode = runGenerator . outProgram
 
 outProgram :: Program -> ST.State AccumulatedCode ()
 outProgram (Program fns) = do
+    addGlobalName "times"       "create_closure(&builtin_times, env)"
+    addGlobalName "plus"        "create_closure(&builtin_plus, env)"
+    addGlobalName "minus"       "create_closure(&builtin_minus, env)"
+    addGlobalName "sqrt"        "create_closure(&builtin_sqrt, env)"
+    addGlobalName "printNumber" "create_closure(&builtin_printNumber, env)"
+    addGlobalName "exit"        "create_closure(&builtin_exit, env)"
+    addGlobalName "isZero?"     "create_closure(&builtin_isZeroP, env)"
     writeLine "#include <stdio.h>"
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
@@ -67,9 +73,7 @@ outMain = do
     writeLine "    env = create_env(NULL);"
     s <- get
     let gn = globalNames s
-    let bn = ["times", "plus", "minus", "sqrt", "printNumber", "exit", "isZero?"]
     mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", " ++ n ++ ");") gn
-    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ (replace "?" "P" name) ++ ", env));") bn
     writeLine ""
     writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
     writeLine ""
