@@ -1,21 +1,13 @@
-let A       = 440
-let A2      = 880
-let SILENCE = 0
-
 let main =
-    \() -> setTempo 120
-    \() -> repeat 2 playIntro
-    \() -> repeat 2 playVerse
-    \() -> setTempo 200
-    \() -> repeat 2 playVerse
-    \() -> exit
+    \() -> playSong exit
 
-let repeat =
-    \(times, play, k) -> isZero? times
-        k
-        \()    -> play
-        \()    -> minus times 1
-        \(res) -> repeat res play k
+let playSong =
+    \(k) -> setTempo 120
+    \()  -> repeat 2 playIntro
+    \()  -> repeat 2 playVerse
+    \()  -> setTempo 200
+    \()  -> repeat 2 playVerse
+    \()  -> k
 
 let playIntro =
     \(k) -> setBeat1 A
@@ -28,3 +20,14 @@ let playVerse =
     \()  -> setBeat1 SILENCE
     \()  -> setBeat1 A2
     \()  -> k
+
+let repeat =
+    \(times, playFn, k) -> isZero? times
+        k
+        \()    -> playFn
+        \()    -> minus times 1
+        \(res) -> repeat res playFn k
+
+let A       = 440
+let A2      = 880
+let SILENCE = 0
