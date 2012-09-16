@@ -1,11 +1,9 @@
 module Data where
 
-data Program  = Program [Function]
+data Program  = Program [Let]
 
-data Function = Function String Lambda
-
-data Lambda   = Lambda [String] [Term]
+data Let      = Let String Term
 
 data Term     = Identifier String
               | Number     Integer
-              | TermLambda Lambda
+              | Lambda     [String] [Term]

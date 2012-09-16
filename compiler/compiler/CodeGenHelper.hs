@@ -12,15 +12,15 @@ outList (x:xs) item separator = item x >> separator >> outList xs item separator
 
 data AccumulatedCode = AccumulatedCode
     { counter     :: Int
-    , globalNames :: [(String, Int)]
+    , globalNames :: [(String, String)]
     , finalCode   :: String
     }
 
 writeLine :: String -> ST.State AccumulatedCode ()
 writeLine line = ST.modify (\s -> s { finalCode = finalCode s ++ line ++ "\n" })
 
-addGlobalName :: String -> Int -> ST.State AccumulatedCode ()
-addGlobalName name n = ST.modify (\s -> s { globalNames = (name, n):globalNames s })
+addGlobalName :: String -> String -> ST.State AccumulatedCode ()
+addGlobalName name code = ST.modify (\s -> s { globalNames = (name, code):globalNames s })
 
 nextCounter :: ST.State AccumulatedCode Int
 nextCounter = do

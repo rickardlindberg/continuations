@@ -15,18 +15,26 @@ outProgram (Program fns) = do
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
     writeLine ""
-    outList fns outFunction (writeLine "")
+    outList fns outLet (writeLine "")
     writeLine ""
     outMain
 
-outFunction :: Function -> ST.State AccumulatedCode ()
-outFunction (Function name lambda) = do
-    n <- outLambda lambda
-    addGlobalName name n
+outLet :: Let -> ST.State AccumulatedCode ()
+outLet (Let name term) = do
+    code <- outTerm term
+    addGlobalName name code
     return ()
 
-outLambda :: Lambda -> ST.State AccumulatedCode Int
-outLambda (Lambda args terms) = do
+outTerm :: Term -> ST.State AccumulatedCode String
+outTerm (Identifier s) = return $ "env_lookup(new_env, \"" ++ s ++ "\")"
+outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
+outTerm (Lambda     args terms) = do
+    n <- outLambda args terms
+    writeLine ""
+    return $ "create_closure(&fn_" ++ show n ++ ", new_env)"
+
+outLambda :: [String] -> [Term] -> ST.State AccumulatedCode Int
+outLambda args terms = do
     n <- nextCounter
     terms <- mapM outTerm terms
     writeLine $ "Call fn_" ++ show n ++ "(Env env, Args args) {"
@@ -50,28 +58,20 @@ outLambda (Lambda args terms) = do
     writeLine $ "}"
     return n
 
-outTerm :: Term -> ST.State AccumulatedCode String
-outTerm (Identifier s) = return $ "env_lookup(new_env, \"" ++ s ++ "\")"
-outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
-outTerm (TermLambda l) = do
-    n <- outLambda l
-    writeLine ""
-    return $ "create_closure(&fn_" ++ show n ++ ", new_env)"
-
 outMain :: ST.State AccumulatedCode ()
 outMain = do
     writeLine "int main() {"
-    writeLine "    Env env;"
+    writeLine "    Env new_env;"
     writeLine "    Call call, next_call;"
     writeLine ""
-    writeLine "    env = create_env(NULL);"
+    writeLine "    new_env = create_env(NULL);"
     s <- get
     let gn = globalNames s
     let bn = ["times", "plus", "minus", "sqrt", "printNumber", "exit", "isZero?"]
-    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&fn_" ++ show n ++ ", env));") gn
-    mapM_ (\name -> writeLine      $ "    env_insert(env, \"" ++ name ++ "\", create_closure(&builtin_" ++ (replace "?" "P" name) ++ ", env));") bn
+    mapM_ (\(name, n) -> writeLine $ "    env_insert(new_env, \"" ++ name ++ "\", " ++ n ++ ");") gn
+    mapM_ (\name -> writeLine      $ "    env_insert(new_env, \"" ++ name ++ "\", create_closure(&builtin_" ++ (replace "?" "P" name) ++ ", new_env));") bn
     writeLine ""
-    writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
+    writeLine "    call = create_call(env_lookup(new_env, \"main\"), create_args(0));"
     writeLine ""
     writeLine "    while (call != NULL) {"
     writeLine "        next_call = call->closure->fn_spec(call->closure->env, call->args);"
@@ -79,7 +79,7 @@ outMain = do
     writeLine "        call = next_call;"
     writeLine "    }"
     writeLine ""
-    writeLine "    free_ref_countable(env);"
+    writeLine "    free_ref_countable(new_env);"
     writeLine ""
     writeLine "    return 0;"
     writeLine "}"
