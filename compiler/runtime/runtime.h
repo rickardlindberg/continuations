@@ -99,3 +99,5 @@ Call builtin_sqrt(Env env, Args args);
 Call builtin_printNumber(Env env, Args args);
 Call builtin_exit(Env env, Args args);
 Call builtin_isZeroP(Env env, Args args);
+Call builtin_setTempo(Env env, Args args);
+Call builtin_setBeat1(Env env, Args args);

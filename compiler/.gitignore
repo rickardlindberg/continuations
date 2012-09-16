@@ -3,6 +3,8 @@
 /examples/pythagoras.c
 /examples/odd-even
 /examples/odd-even.c
+/examples/music
+/examples/music.c
 /compiler/*.o
 /compiler/*.hi
 /compiler/Compiler

@@ -1,7 +1,8 @@
-test: examples/pythagoras examples/odd-even tests/test-runtime
+test: examples/pythagoras examples/odd-even examples/music tests/test-runtime
 	./tests/test-runtime
 	./examples/pythagoras
 	./examples/odd-even
+	./examples/music
 
 tests/test-runtime: tests/test-runtime.c runtime/runtime.c runtime/runtime.h
 	gcc -g -Iruntime -lm -o tests/test-runtime tests/test-runtime.c runtime/runtime.c
@@ -17,6 +18,12 @@ examples/odd-even: examples/odd-even.c runtime/runtime.c runtime/runtime.h
 
 examples/odd-even.c: examples/odd-even.con compiler/Compiler
 	cat examples/odd-even.con | compiler/Compiler > examples/odd-even.c
+
+examples/music: examples/music.c runtime/runtime.c runtime/runtime.h
+	gcc -g -Iruntime -lm -o examples/music examples/music.c runtime/runtime.c
+
+examples/music.c: examples/music.con compiler/Compiler
+	cat examples/music.con | compiler/Compiler > examples/music.c
 
 compiler/Compiler: compiler/*.hs
 	cd compiler && ghc --make Compiler.hs

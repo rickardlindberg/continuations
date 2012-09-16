@@ -17,6 +17,8 @@ outProgram (Program lets) = do
     addGlobalName "printNumber" "create_closure(&builtin_printNumber, env)"
     addGlobalName "exit"        "create_closure(&builtin_exit, env)"
     addGlobalName "isZero?"     "create_closure(&builtin_isZeroP, env)"
+    addGlobalName "setTempo"    "create_closure(&builtin_setTempo, env)"
+    addGlobalName "setBeat1"    "create_closure(&builtin_setBeat1, env)"
     writeLine "#include <stdio.h>"
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""

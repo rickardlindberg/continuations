@@ -214,6 +214,20 @@ Call builtin_isZeroP(Env env, Args args) {
     }
 }
 
+Call builtin_setTempo(Env env, Args args) {
+    Number n = (Number)args_get(args, 0);
+    Closure k = (Closure)args_get(args, 1);
+    printf("setting tempo: %f\n", n->value);
+    return create_call(k, create_args(0));
+}
+
+Call builtin_setBeat1(Env env, Args args) {
+    Number n = (Number)args_get(args, 0);
+    Closure k = (Closure)args_get(args, 1);
+    printf("setting beat 1: %f\n", n->value);
+    return create_call(k, create_args(0));
+}
+
 Call builtin_exit(Env env, Args args) {
     return NULL;
 }
