@@ -9,7 +9,7 @@ generateCode :: Program -> String
 generateCode = runGenerator . outProgram
 
 outProgram :: Program -> ST.State AccumulatedCode ()
-outProgram (Program fns) = do
+outProgram (Program lets) = do
     addGlobalName "times"       "create_closure(&builtin_times, env)"
     addGlobalName "plus"        "create_closure(&builtin_plus, env)"
     addGlobalName "minus"       "create_closure(&builtin_minus, env)"
@@ -21,26 +21,16 @@ outProgram (Program fns) = do
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
     writeLine ""
-    outList fns outLet (writeLine "")
-    writeLine ""
+    mapM_ outLet lets
     outMain
 
 outLet :: Let -> ST.State AccumulatedCode ()
-outLet (Let name term) = do
-    code <- outTerm term
-    addGlobalName name code
-    return ()
+outLet (Let name term) = outTerm term >>= addGlobalName name
 
 outTerm :: Term -> ST.State AccumulatedCode String
-outTerm (Identifier s) = return $ "env_lookup(env, \"" ++ s ++ "\")"
-outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
+outTerm (Identifier s)          = return $ "env_lookup(env, \"" ++ s ++ "\")"
+outTerm (Number     n)          = return $ "const_number(" ++ show n ++ ")"
 outTerm (Lambda     args terms) = do
-    n <- outLambda args terms
-    writeLine ""
-    return $ "create_closure(&fn_" ++ show n ++ ", env)"
-
-outLambda :: [String] -> [Term] -> ST.State AccumulatedCode Int
-outLambda args terms = do
     n <- nextCounter
     terms <- mapM outTerm terms
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
@@ -62,18 +52,19 @@ outLambda args terms = do
     writeLine $ ""
     writeLine $ "    return create_call(closure, next_args);"
     writeLine $ "}"
-    return n
+    writeLine ""
+    return $ "create_closure(&fn_" ++ show n ++ ", env)"
 
 outMain :: ST.State AccumulatedCode ()
 outMain = do
+    state <- get
     writeLine "int main() {"
     writeLine "    Env env;"
     writeLine "    Call call, next_call;"
     writeLine ""
     writeLine "    env = create_env(NULL);"
-    s <- get
-    let gn = globalNames s
-    mapM_ (\(name, n) -> writeLine $ "    env_insert(env, \"" ++ name ++ "\", " ++ n ++ ");") gn
+    forM (globalNames state) $ \(name, code) -> do
+        writeLine $ "    env_insert(env, \"" ++ name ++ "\", " ++ code ++ ");"
     writeLine ""
     writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
     writeLine ""
