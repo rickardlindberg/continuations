@@ -15,10 +15,10 @@ test: tests/test-runtime $(EXAMPLES)
 	./examples/music
 
 tests/test-runtime: tests/test-runtime.c $(RUNTIME)
-	gcc -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
+	gcc -Wall -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
 
 examples/%: examples/%.c $(RUNTIME)
-	gcc -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
+	gcc -Wall -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
 
 examples/%.c: examples/%.con $(COMPILER)
 	cat $< | $(COMPILER) > $@

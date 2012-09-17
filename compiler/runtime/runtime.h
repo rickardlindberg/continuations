@@ -19,10 +19,9 @@ struct ref_count {
 };
 
 void free_ref_countable(void * ref_countable);
-
-static void dec_and_free(void * ref_countable);
-static void * inc(void * ref_countable);
-static void * dec(void * ref_countable);
+void dec_and_free(void * ref_countable);
+void * inc(void * ref_countable);
+void * dec(void * ref_countable);
 
 // Env
 
@@ -41,8 +40,7 @@ struct env {
 Env create_env(Env parent);
 void env_insert(Env env, char * key, void * ref_countable);
 void * env_lookup(Env env, char * key);
-
-static void free_env(void * env);
+void free_env(void * env);
 
 // Args
 
@@ -55,8 +53,7 @@ struct args {
 Args create_args(int size);
 void args_set(Args args, int i, void * ref_countable);
 void * args_get(Args args, int i);
-
-static void free_args(void * args);
+void free_args(void * args);
 
 // Closure
 
@@ -67,8 +64,7 @@ struct closure {
 };
 
 Closure create_closure(FnSpec fn_spec, Env env);
-
-static void free_closure(void * closure);
+void free_closure(void * closure);
 
 // Call
 
@@ -79,8 +75,7 @@ struct call {
 };
 
 Call create_call(Closure closure, Args args);
-
-static void free_call(void * call);
+void free_call(void * call);
 
 // Constants
 
@@ -90,7 +85,6 @@ struct number {
 };
 
 Number const_number(double i);
-
-static void free_number(void * number);
+void free_number(void * number);
 
 #endif

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "runtime.h"
 
 // Ref countable
@@ -11,17 +12,17 @@ void free_ref_countable(void * ref_countable) {
     }
 }
 
-static void dec_and_free(void * ref_countable) {
+void dec_and_free(void * ref_countable) {
     free_ref_countable(dec(ref_countable));
 }
 
-static void * inc(void * ref_countable) {
+void * inc(void * ref_countable) {
     RefCount ref_count = (RefCount)ref_countable;
     ref_count->count++;
     return ref_countable;
 }
 
-static void * dec(void * ref_countable) {
+void * dec(void * ref_countable) {
     RefCount ref_count = (RefCount)ref_countable;
     ref_count->count--;
     return ref_countable;
@@ -65,7 +66,7 @@ void * env_lookup(Env env, char * key) {
     return env_lookup(env->parent, key);
 }
 
-static void free_env(void * ref_countable) {
+void free_env(void * ref_countable) {
     Env env = (Env)ref_countable;
     int i;
     for (i = 0; i < env->size; i++) {
@@ -97,7 +98,7 @@ void * args_get(Args args, int i) {
     return args->args[i];
 }
 
-static void free_args(void * ref_countable) {
+void free_args(void * ref_countable) {
     Args args = (Args)ref_countable;
     int i;
     for (i = 0; i < args->size; i++) {
@@ -118,7 +119,7 @@ Closure create_closure(FnSpec fn_spec, Env env) {
     return closure;
 }
 
-static void free_closure(void * ref_countable) {
+void free_closure(void * ref_countable) {
     Closure closure = (Closure)ref_countable;
     dec_and_free(closure->env);
     free(closure);
@@ -135,7 +136,7 @@ Call create_call(Closure closure, Args args) {
     return call;
 }
 
-static void free_call(void * ref_countable) {
+void free_call(void * ref_countable) {
     Call call = (Call)ref_countable;
     dec_and_free(call->closure);
     dec_and_free(call->args);
@@ -152,7 +153,7 @@ Number const_number(double i) {
     return number;
 }
 
-static void free_number(void * ref_countable) {
+void free_number(void * ref_countable) {
     Number number = (Number)ref_countable;
     free(number);
 }
