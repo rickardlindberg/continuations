@@ -93,16 +93,4 @@ Number const_number(double i);
 
 static void free_number(void * number);
 
-// Built-ins
-
-Call builtin_times(Env env, Args args);
-Call builtin_plus(Env env, Args args);
-Call builtin_minus(Env env, Args args);
-Call builtin_sqrt(Env env, Args args);
-Call builtin_printNumber(Env env, Args args);
-Call builtin_exit(Env env, Args args);
-Call builtin_isZeroP(Env env, Args args);
-Call builtin_setTempo(Env env, Args args);
-Call builtin_setBeat1(Env env, Args args);
-
 #endif

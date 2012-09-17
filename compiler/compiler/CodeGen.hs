@@ -22,6 +22,7 @@ outProgram (Program lets) = do
     writeLine "#include <stdio.h>"
     writeLine "#include <stdlib.h>"
     writeLine "#include \"runtime.h\""
+    writeLine "#include \"builtins.h\""
     writeLine ""
     mapM_ outLet lets
     outMain
