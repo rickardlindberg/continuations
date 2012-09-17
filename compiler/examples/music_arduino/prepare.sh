@@ -6,7 +6,11 @@ cp ../../runtime/runtime.h runtime.h
 cp ../../runtime/runtime.c runtime.cpp
 
 cp ../../runtime/builtins.h builtins.h
-cp ../../runtime/builtins.c builtins.cpp
+cat ../../runtime/builtins.c \
+    | sed 's/#include "builtins.h"/#include "builtins.h"\n#include "WProgram.h"/' \
+    | sed 's/    printf("setting tempo.*/    Serial.print("tempo: "); Serial.println(n->value);/' \
+    | sed 's/    printf("setting beat.*/    Serial.print("beat 1: "); Serial.println(n->value);/' \
+    > builtins.cpp
 
 cat ../music.c | sed 's/int main/int music/' > music.cpp
 
