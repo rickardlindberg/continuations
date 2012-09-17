@@ -1,29 +1,27 @@
-test: examples/pythagoras examples/odd-even examples/music tests/test-runtime
+EXAMPLES  = examples/pythagoras \
+	    examples/odd-even \
+	    examples/music
+
+RUNTIME_C = runtime/*.c
+RUNTIME_H = runtime/*.h
+RUNTIME   = $(RUNTIME_C) $(RUNTIME_H)
+
+COMPILER  = compiler/Compiler
+
+test: tests/test-runtime $(EXAMPLES)
 	./tests/test-runtime
 	./examples/pythagoras
 	./examples/odd-even
 	./examples/music
 
-tests/test-runtime: tests/test-runtime.c runtime/runtime.c runtime/runtime.h
-	gcc -g -Iruntime -lm -o tests/test-runtime tests/test-runtime.c runtime/runtime.c
+tests/test-runtime: tests/test-runtime.c $(RUNTIME)
+	gcc -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
 
-examples/pythagoras: examples/pythagoras.c runtime/runtime.c runtime/runtime.h
-	gcc -g -Iruntime -lm -o examples/pythagoras examples/pythagoras.c runtime/runtime.c
+examples/%: examples/%.c $(RUNTIME)
+	gcc -g -Iruntime -lm -o $@ $< $(RUNTIME_C)
 
-examples/pythagoras.c: examples/pythagoras.con compiler/Compiler
-	cat examples/pythagoras.con | compiler/Compiler > examples/pythagoras.c
-
-examples/odd-even: examples/odd-even.c runtime/runtime.c runtime/runtime.h
-	gcc -g -Iruntime -lm -o examples/odd-even examples/odd-even.c runtime/runtime.c
-
-examples/odd-even.c: examples/odd-even.con compiler/Compiler
-	cat examples/odd-even.con | compiler/Compiler > examples/odd-even.c
-
-examples/music: examples/music.c runtime/runtime.c runtime/runtime.h
-	gcc -g -Iruntime -lm -o examples/music examples/music.c runtime/runtime.c
-
-examples/music.c: examples/music.con compiler/Compiler
-	cat examples/music.con | compiler/Compiler > examples/music.c
+examples/%.c: examples/%.con $(COMPILER)
+	cat $< | $(COMPILER) > $@
 
 compiler/Compiler: compiler/*.hs
 	cd compiler && ghc --make Compiler.hs
@@ -31,8 +29,8 @@ compiler/Compiler: compiler/*.hs
 .PHONY: clean
 clean:
 	rm -f tests/test-runtime
-	rm -f examples/pythagoras
-	rm -f examples/pythagoras.c
+	rm -f $(EXAMPLES)
+	rm -f examples/*.c
 	rm -f compiler/*.o
 	rm -f compiler/*.hi
 	rm -f compiler/Compiler
