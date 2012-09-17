@@ -69,7 +69,7 @@ outMain = do
     forM (globalNames state) $ \(name, code) -> do
         writeLine $ "    env_insert(env, \"" ++ name ++ "\", " ++ code ++ ");"
     writeLine ""
-    writeLine "    call = create_call(env_lookup(env, \"main\"), create_args(0));"
+    writeLine "    call = create_call((Closure)env_lookup(env, \"main\"), create_args(0));"
     writeLine ""
     writeLine "    while (call != NULL) {"
     writeLine "        next_call = call->closure->fn_spec(call->closure->env, call->args);"

@@ -115,7 +115,7 @@ Closure create_closure(FnSpec fn_spec, Env env) {
     closure->ref_count.count = 0;
     closure->ref_count.free_fn = &free_closure;
     closure->fn_spec = fn_spec;
-    closure->env = inc(env);
+    closure->env = (Env)inc(env);
     return closure;
 }
 
@@ -131,8 +131,8 @@ Call create_call(Closure closure, Args args) {
     Call call = (Call)malloc(sizeof(struct call));
     call->ref_count.count = 0;
     call->ref_count.free_fn = &free_call;
-    call->closure = inc(closure);
-    call->args = inc(args);
+    call->closure = (Closure)inc(closure);
+    call->args = (Args)inc(args);
     return call;
 }
 
