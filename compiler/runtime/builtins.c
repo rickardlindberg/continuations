@@ -29,7 +29,6 @@ Call builtin_minus(Env env, Args args) {
     return create_call(k, next_args);
 }
 
-
 Call builtin_sqrt(Env env, Args args) {
     Number n = (Number)args_get(args, 0);
     Closure k = (Closure)args_get(args, 1);
