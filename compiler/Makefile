@@ -26,6 +26,8 @@ examples/%.c: examples/%.con $(COMPILER)
 compiler/Compiler: compiler/*.hs
 	cd compiler && ghc --make Compiler.hs
 
+.PRECIOUS: examples/%.c
+
 .PHONY: clean
 clean:
 	rm -f tests/test-runtime
