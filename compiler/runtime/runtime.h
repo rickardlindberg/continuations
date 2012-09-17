@@ -1,3 +1,6 @@
+#ifndef RUNTIME_H
+#define RUNTIME_H
+
 typedef struct ref_count * RefCount;
 typedef struct env       * Env;
 typedef struct args      * Args;
@@ -101,3 +104,5 @@ Call builtin_exit(Env env, Args args);
 Call builtin_isZeroP(Env env, Args args);
 Call builtin_setTempo(Env env, Args args);
 Call builtin_setBeat1(Env env, Args args);
+
+#endif
