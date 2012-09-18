@@ -8,21 +8,11 @@ data Let     = Let String Term
 
 data Term    = Identifier String
              | Number     Integer
-             | Function   Fn
+             | Function   T.Type FnBody
 
-data Fn      = Fn
-    { fnTypeNew :: T.Type
-    , fnBodyNew :: FnBody
-    }
-
-data FnBody =
-    Lambda
-        { args     :: [String]
-        , terms    :: [Term]
-        }
-    | Builtin
-        { name     :: String
-        , code     :: String
-        , fnType   :: T.Type
-        , includes :: [String]
-        }
+data FnBody  = Lambda  { args     :: [String]
+                       , terms    :: [Term]
+                       }
+             | Builtin { includes :: [String]
+                       , code     :: String
+                       }

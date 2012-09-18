@@ -20,12 +20,12 @@ outLet :: Let -> ST.State AccumulatedCode ()
 outLet (Let name term) = outTerm term >>= addGlobalName name
 
 outTerm :: Term -> ST.State AccumulatedCode String
-outTerm (Identifier s) = return $ "env_lookup(env, \"" ++ s ++ "\")"
-outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
-outTerm (Function   f) = outFunction f
+outTerm (Identifier s)   = return $ "env_lookup(env, \"" ++ s ++ "\")"
+outTerm (Number     n)   = return $ "const_number(" ++ show n ++ ")"
+outTerm (Function   t b) = outFunction t b
 
-outFunction :: Fn -> ST.State AccumulatedCode String
-outFunction (Fn _ (Lambda args terms)) = do
+outFunction :: T.Type -> FnBody -> ST.State AccumulatedCode String
+outFunction _ (Lambda args terms) = do
     n <- nextCounter
     terms <- mapM outTerm terms
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
@@ -49,7 +49,7 @@ outFunction (Fn _ (Lambda args terms)) = do
     writeLine $ "}"
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
-outFunction (Fn _ (Builtin _ code (T.Function argTypes) includes)) = do
+outFunction (T.Function argTypes) (Builtin includes code) = do
     mapM_ addInclude includes
     n <- nextCounter
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"

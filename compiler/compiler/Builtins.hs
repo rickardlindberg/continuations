@@ -1,7 +1,13 @@
 module Builtins where
 
 import qualified Types.Types as T
-import Types.Semantic
+
+data Builtin = Builtin
+    { name     :: String
+    , code     :: String
+    , fnType   :: T.Type
+    , includes :: [String]
+    }
 
 builtins =
     [ Builtin
@@ -59,8 +65,3 @@ builtins =
         , includes = ["<stdio.h>"]
         }
     ]
-
-addBuiltins :: Program -> Program
-addBuiltins (Program lets) = Program (newLets ++ lets)
-    where
-        newLets = map (\(b) -> Let (name b) (Function (Fn (fnType b) b))) builtins
