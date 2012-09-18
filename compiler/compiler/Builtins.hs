@@ -63,4 +63,4 @@ builtins =
 addBuiltins :: Program -> Program
 addBuiltins (Program lets) = Program (newLets ++ lets)
     where
-        newLets = map (\(b) -> Let (name b) (BuiltinFn b)) builtins
+        newLets = map (\(b) -> Let (name b) (Function (Fn (fnType b) b))) builtins

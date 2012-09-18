@@ -16,31 +16,16 @@ outProgram (Program lets) = do
     mapM_ outLet lets
     outMain
 
-outBuiltin :: Builtin -> ST.State AccumulatedCode String
-outBuiltin (Builtin name code (T.Function argTypes) includes) = do
-    mapM_ addInclude includes
-    n <- nextCounter
-    addGlobalName name ("create_closure(&fn_" ++ show n ++ ", env)")
-    writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
-    forM (zip [0..] argTypes) $ \(i, argType) -> do
-        writeLine $ "    " ++ cType argType ++ " arg" ++ show i ++ " = (" ++ cType argType ++ ")args_get(args, " ++ show i ++ ");"
-    writeLine $ "    Closure k;"
-    writeLine $ "    Args next_args;"
-    writeLine $ "    " ++ code
-    writeLine $ "}"
-    writeLine ""
-    return $ "create_closure(&fn_" ++ show n ++ ", env)"
-    where
-        cType T.Number = "Number"
-        cType (T.Function _) = "Closure"
-
 outLet :: Let -> ST.State AccumulatedCode ()
 outLet (Let name term) = outTerm term >>= addGlobalName name
 
 outTerm :: Term -> ST.State AccumulatedCode String
-outTerm (Identifier s)          = return $ "env_lookup(env, \"" ++ s ++ "\")"
-outTerm (Number     n)          = return $ "const_number(" ++ show n ++ ")"
-outTerm (Lambda     args terms) = do
+outTerm (Identifier s) = return $ "env_lookup(env, \"" ++ s ++ "\")"
+outTerm (Number     n) = return $ "const_number(" ++ show n ++ ")"
+outTerm (Function   f) = outFunction f
+
+outFunction :: Fn -> ST.State AccumulatedCode String
+outFunction (Fn _ (Lambda args terms)) = do
     n <- nextCounter
     terms <- mapM outTerm terms
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
@@ -64,7 +49,21 @@ outTerm (Lambda     args terms) = do
     writeLine $ "}"
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
-outTerm (BuiltinFn builtin) = outBuiltin builtin
+outFunction (Fn _ (Builtin _ code (T.Function argTypes) includes)) = do
+    mapM_ addInclude includes
+    n <- nextCounter
+    writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
+    forM (zip [0..] argTypes) $ \(i, argType) -> do
+        writeLine $ "    " ++ cType argType ++ " arg" ++ show i ++ " = (" ++ cType argType ++ ")args_get(args, " ++ show i ++ ");"
+    writeLine $ "    Closure k;"
+    writeLine $ "    Args next_args;"
+    writeLine $ "    " ++ code
+    writeLine $ "}"
+    writeLine ""
+    return $ "create_closure(&fn_" ++ show n ++ ", env)"
+    where
+        cType T.Number = "Number"
+        cType (T.Function _) = "Closure"
 
 outMain :: ST.State AccumulatedCode ()
 outMain = do
