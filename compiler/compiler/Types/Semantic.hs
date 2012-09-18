@@ -1,5 +1,7 @@
 module Types.Semantic where
 
+import qualified Types.Types as T
+
 data Program = Program [Let]
 
 data Let     = Let String Term
@@ -12,8 +14,6 @@ data Term    = Identifier String
 data Builtin = Builtin
     { name     :: String
     , code     :: String
-    , fnType   :: Type
+    , fnType   :: T.Type
     , includes :: [String]
     }
-
-data Type = TNumber | Fn [Type]

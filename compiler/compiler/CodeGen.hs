@@ -3,6 +3,7 @@ module CodeGen where
 import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
+import qualified Types.Types as T
 import Types.Semantic
 
 generateCode :: Program -> String
@@ -16,7 +17,7 @@ outProgram (Program lets) = do
     outMain
 
 outBuiltin :: Builtin -> ST.State AccumulatedCode String
-outBuiltin (Builtin name code (Fn argTypes) includes) = do
+outBuiltin (Builtin name code (T.Function argTypes) includes) = do
     mapM_ addInclude includes
     n <- nextCounter
     addGlobalName name ("create_closure(&fn_" ++ show n ++ ", env)")
@@ -30,8 +31,8 @@ outBuiltin (Builtin name code (Fn argTypes) includes) = do
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
     where
-        cType TNumber = "Number"
-        cType (Fn _) = "Closure"
+        cType T.Number = "Number"
+        cType (T.Function _) = "Closure"
 
 outLet :: Let -> ST.State AccumulatedCode ()
 outLet (Let name term) = outTerm term >>= addGlobalName name
