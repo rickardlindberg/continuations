@@ -32,6 +32,7 @@ cType (Fn _) = "Closure"
 
 outBuiltin :: String -> String -> Type -> ST.State AccumulatedCode String
 outBuiltin name code (Fn argTypes) = do
+    addInclude "<math.h>"
     n <- nextCounter
     addGlobalName name ("create_closure(&fn_" ++ show n ++ ", env)")
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
