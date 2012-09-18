@@ -2,22 +2,23 @@ module Optimize where
 
 import Types.Semantic
 
+optimize :: Program -> Program
 optimize = removeUnusedFunctions
 
 removeUnusedFunctions :: Program -> Program
-removeUnusedFunctions program@(Program lets) = Program newLets
+removeUnusedFunctions program@(Program lets) = Program $ filter isUsed lets
     where
-        usedGlobalNames = "main" : extractGlobalNames program
-        newLets = filter (\(Let name _) -> name `elem` usedGlobalNames) lets
+        isUsed (Let name _) = name `elem` usedGlobalNames
+        usedGlobalNames = "main" : extractUsedGlobalNames program
 
-extractGlobalNames :: Program -> [String]
-extractGlobalNames (Program lets) = extractFromLets lets []
+extractUsedGlobalNames :: Program -> [String]
+extractUsedGlobalNames (Program lets) = extractFromLets lets []
     where
-        extractFromLets lets existing = concatMap (\l -> extractFromLet l existing) lets
-        extractFromLet (Let _ t) existing = extractFromTerm t existing
-        extractFromTerms terms existing = concatMap (\t -> extractFromTerm t existing) terms
-        extractFromTerm (Identifier s)    existing = if s `elem` existing then [] else [s]
-        extractFromTerm (Function _ body) existing = extractFromFn body existing
-        extractFromTerm _                     _ = []
-        extractFromFn (Lambda args terms) existing = extractFromTerms terms (existing ++ args)
-        extractFromFn _                       _        = []
+        extractFromLets lets              localNames = concatMap (\l -> extractFromLet l localNames) lets
+        extractFromLet (Let _ t)          localNames = extractFromTerm t localNames
+        extractFromTerms terms            localNames = concatMap (\t -> extractFromTerm t localNames) terms
+        extractFromTerm (Identifier s)    localNames = if s `elem` localNames then [] else [s]
+        extractFromTerm (Function _ body) localNames = extractFromFn body localNames
+        extractFromTerm _                 _          = []
+        extractFromFn (Lambda args terms) localNames = extractFromTerms terms (localNames ++ args)
+        extractFromFn _                   _          = []
