@@ -7,17 +7,23 @@ import qualified Types.Syntax as Syn
 import qualified Types.Types as T
 
 syntaxToSemantic :: Syn.Program -> Sem.Program
-syntaxToSemantic (Syn.Program lets) = optimize $ addBuiltins $ Sem.Program (map convertLet lets)
-    where
-        convertLet  (Syn.Let s t)      = Sem.Let s (convertTerm t)
-        convertTerm (Syn.Identifier s) = Sem.Identifier s
-        convertTerm (Syn.Number n)     = Sem.Number n
-        convertTerm (Syn.Lambda ss ts) = Sem.Function T.Unknown (Sem.Lambda ss (map convertTerm ts))
+syntaxToSemantic = optimize . addBuiltins . convertProgram
+
+convertProgram :: Syn.Program -> Sem.Program
+convertProgram (Syn.Program lets)      = Sem.Program (map convertLet lets)
+convertLet     (Syn.Let name term)     = Sem.Let name (convertTerm term)
+convertTerm    (Syn.Identifier name)   = Sem.Identifier name
+convertTerm    (Syn.Number num)        = Sem.Number num
+convertTerm    (Syn.Lambda args terms) = Sem.Function T.Unknown (Sem.Lambda args (map convertTerm terms))
 
 addBuiltins :: Sem.Program -> Sem.Program
-addBuiltins (Sem.Program lets) = Sem.Program (newLets ++ lets)
+addBuiltins (Sem.Program lets) = Sem.Program (builtinLets ++ lets)
     where
-        newLets = map (\(b) -> Sem.Let (B.name b) (Sem.Function (B.fnType b) (b2b b)))
-                      (filter (\(b) -> B.name b `notElem` letNames) B.builtins)
+        builtinLets = map builtinToLet nonOverridenBuiltins
+        nonOverridenBuiltins = filter (\(b) -> B.name b `notElem` letNames) B.builtins
         letNames = map (\(Sem.Let name _) -> name) lets
+
+builtinToLet :: B.Builtin -> Sem.Let
+builtinToLet builtin = Sem.Let (B.name builtin) (Sem.Function (B.fnType builtin) (b2b builtin))
+    where
         b2b (B.Builtin n c t i) = (Sem.Builtin i c)
