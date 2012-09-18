@@ -13,7 +13,6 @@ outProgram :: Program -> ST.State AccumulatedCode ()
 outProgram (Program lets) = do
     addInclude "\"runtime.h\""
     writeLine ""
-    mapM_ outBuiltin builtins
     mapM_ outLet lets
     outMain
 
@@ -65,6 +64,7 @@ outTerm (Lambda     args terms) = do
     writeLine $ "}"
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
+outTerm (BuiltinFn builtin) = outBuiltin builtin
 
 outMain :: ST.State AccumulatedCode ()
 outMain = do

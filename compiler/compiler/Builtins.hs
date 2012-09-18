@@ -3,15 +3,7 @@ module Builtins where
 import CodeGenHelper hiding (includes)
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
-
-data Type = TNumber | Fn [Type]
-
-data Builtin = Builtin
-    { name     :: String
-    , code     :: String
-    , fnType   :: Type
-    , includes :: [String]
-    }
+import Data
 
 builtins =
     [ Builtin
@@ -69,3 +61,8 @@ builtins =
         , includes = ["<stdio.h>"]
         }
     ]
+
+addBuiltins :: Program -> Program
+addBuiltins (Program lets) = Program (newLets ++ lets)
+    where
+        newLets = map (\(b) -> Let (name b) (BuiltinFn b)) builtins
