@@ -69,21 +69,3 @@ builtins =
         , includes = ["<stdio.h>"]
         }
     ]
-
-cType TNumber = "Number"
-cType (Fn _) = "Closure"
-
-outBuiltin :: Builtin -> ST.State AccumulatedCode String
-outBuiltin (Builtin name code (Fn argTypes) includes) = do
-    mapM_ addInclude includes
-    n <- nextCounter
-    addGlobalName name ("create_closure(&fn_" ++ show n ++ ", env)")
-    writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
-    forM (zip [0..] argTypes) $ \(i, argType) -> do
-        writeLine $ "    " ++ cType argType ++ " arg" ++ show i ++ " = (" ++ cType argType ++ ")args_get(args, " ++ show i ++ ");"
-    writeLine $ "    Closure k;"
-    writeLine $ "    Args next_args;"
-    writeLine $ "    " ++ code
-    writeLine $ "}"
-    writeLine ""
-    return $ "create_closure(&fn_" ++ show n ++ ", env)"
