@@ -5,14 +5,12 @@
 cp ../../runtime/runtime.h runtime.h
 cp ../../runtime/runtime.c runtime.cpp
 
-cp ../../runtime/builtins.h builtins.h
-cat ../../runtime/builtins.c \
-    | sed 's/#include "builtins.h"/#include "builtins.h"\n#include "WProgram.h"/' \
-    | sed 's/    printf("setting tempo.*/    Serial.print("tempo: "); Serial.println(n->value);/' \
-    | sed 's/    printf("setting beat.*/    Serial.print("beat 1: "); Serial.println(n->value);/' \
-    > builtins.cpp
-
-cat ../music.c | sed 's/int main/int music/' > music.cpp
+cat ../music.c \
+    | sed 's/int main/int music/' \
+    | sed 's/#include "runtime.h"/#include "runtime.h"\n#include "WProgram.h"/' \
+    | sed 's/printf("set tempo[^)]*)/Serial.print("tempo: "); Serial.println(arg0->value)/' \
+    | sed 's/printf("set beat[^)]*)/Serial.print("beat 1: "); Serial.println(arg0->value)/' \
+    > music.cpp
 
 rm -f music.h
 echo "#ifndef MUSIC_H" >> music.h

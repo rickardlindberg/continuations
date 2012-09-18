@@ -1,5 +1,6 @@
 module CodeGen where
 
+import Builtins
 import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
@@ -10,20 +11,13 @@ generateCode = runGenerator . outProgram
 
 outProgram :: Program -> ST.State AccumulatedCode ()
 outProgram (Program lets) = do
-    addGlobalName "times"       "create_closure(&builtin_times, env)"
-    addGlobalName "plus"        "create_closure(&builtin_plus, env)"
-    addGlobalName "minus"       "create_closure(&builtin_minus, env)"
-    addGlobalName "sqrt"        "create_closure(&builtin_sqrt, env)"
-    addGlobalName "printNumber" "create_closure(&builtin_printNumber, env)"
-    addGlobalName "exit"        "create_closure(&builtin_exit, env)"
-    addGlobalName "isZero?"     "create_closure(&builtin_isZeroP, env)"
-    addGlobalName "setTempo"    "create_closure(&builtin_setTempo, env)"
-    addGlobalName "setBeat1"    "create_closure(&builtin_setBeat1, env)"
     writeLine "#include <stdio.h>"
     writeLine "#include <stdlib.h>"
+    writeLine "#include <math.h>"
     writeLine "#include \"runtime.h\""
-    writeLine "#include \"builtins.h\""
     writeLine ""
+    forM builtins $ \(name, code, t) ->
+        outBuiltin name code t
     mapM_ outLet lets
     outMain
 
