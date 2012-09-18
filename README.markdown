@@ -40,5 +40,5 @@ I wanted to continue experimenting with the compiler, so I copied it over to
 Additional ideas implemented in `/compiler`:
 
 * Generate implementation of built in functions
-* TODO: Introduce syntactic sugar (maybe let expressions)
+* Syntactic sugar for let expressions
 * TODO: Perform type checking

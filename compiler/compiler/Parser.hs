@@ -1,5 +1,6 @@
 module Parser where
 
+import Control.Monad
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (haskellDef)
@@ -23,8 +24,10 @@ term       =  fmap Identifier identifier
                  args <- sepBy identifier (symbol ",")
                  symbol ")"
                  symbol "->"
+                 lets <- many letp
+                 when (not (null lets)) (reserved "in")
                  terms <- many1 term
-                 return (Lambda args terms)
+                 return (Lambda lets args terms)
           <|> parens term
 
 whiteSpace = P.whiteSpace lexer
@@ -34,6 +37,6 @@ identifier = P.identifier lexer
 reserved   = P.reserved   lexer
 parens     = P.parens     lexer
 lexer      = makeTokenParser $ haskellDef
-             { P.reservedNames = ["let"]
+             { P.reservedNames = ["let", "in"]
              , P.identLetter   = P.identLetter haskellDef <|> char '?' <|> char '-'
              }

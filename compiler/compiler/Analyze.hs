@@ -10,11 +10,20 @@ syntaxToSemantic :: Syn.Program -> Sem.Program
 syntaxToSemantic = optimize . addBuiltins . convertProgram
 
 convertProgram :: Syn.Program -> Sem.Program
-convertProgram (Syn.Program lets)      = Sem.Program (map convertLet lets)
-convertLet     (Syn.Let name term)     = Sem.Let name (convertTerm term)
-convertTerm    (Syn.Identifier name)   = Sem.Identifier name
-convertTerm    (Syn.Number num)        = Sem.Number num
-convertTerm    (Syn.Lambda args terms) = Sem.Function T.Unknown (Sem.Lambda args (map convertTerm terms))
+convertProgram (Syn.Program lets)           = Sem.Program (map convertLet lets)
+convertLet     (Syn.Let name term)          = Sem.Let name (convertTerm term)
+convertTerm    (Syn.Identifier name)        = Sem.Identifier name
+convertTerm    (Syn.Number num)             = Sem.Number num
+convertTerm    (Syn.Lambda lets args terms) =
+    Sem.Function T.Unknown (Sem.Lambda args (convertLets lets terms))
+convertLets    lets innerMostTerms          =
+    foldr wrapWithLet (map convertTerm innerMostTerms) lets
+
+wrapWithLet :: Syn.Let -> [Sem.Term] -> [Sem.Term]
+wrapWithLet (Syn.Let name term) innerTerms =
+    [ Sem.Function T.Unknown (Sem.Lambda [name] innerTerms)
+    , convertTerm term
+    ]
 
 addBuiltins :: Sem.Program -> Sem.Program
 addBuiltins (Sem.Program lets) = Sem.Program (builtinLets ++ lets)

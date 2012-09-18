@@ -22,11 +22,13 @@ let playVerse =
     \()  -> k
 
 let repeat =
-    \(times, playFn, k) -> isZero? times
-        k
-        \()    -> playFn
-        \()    -> minus times 1
-        \(res) -> repeat res playFn k
+    \(times, playFn, k) ->
+        let continue = \()    -> playFn
+                       \()    -> minus times 1
+                       \(res) -> repeat res playFn k
+        in  isZero? times
+                k
+                continue
 
 let A       = 440
 let A2      = 880
