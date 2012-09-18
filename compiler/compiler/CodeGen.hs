@@ -11,12 +11,9 @@ generateCode = runGenerator . outProgram
 
 outProgram :: Program -> ST.State AccumulatedCode ()
 outProgram (Program lets) = do
-    addInclude "<stdio.h>"
-    addInclude "<stdlib.h>"
     addInclude "\"runtime.h\""
     writeLine ""
-    forM builtins $ \(name, code, t) ->
-        outBuiltin name code t
+    forM builtins outBuiltin
     mapM_ outLet lets
     outMain
 
