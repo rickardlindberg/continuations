@@ -39,6 +39,6 @@ I wanted to continue experimenting with the compiler, so I copied it over to
 
 Additional ideas implemented in `/compiler`:
 
-* TODO: Generate implementation of built in functions
+* Generate implementation of built in functions
 * TODO: Introduce syntactic sugar (maybe let expressions)
 * TODO: Perform type checking
