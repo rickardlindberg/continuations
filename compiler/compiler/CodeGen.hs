@@ -1,6 +1,5 @@
 module CodeGen where
 
-import Builtins
 import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST

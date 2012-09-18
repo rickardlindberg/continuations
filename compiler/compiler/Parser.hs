@@ -4,7 +4,7 @@ import Data
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (haskellDef)
-import Text.ParserCombinators.Parsec.Token (TokenParser, makeTokenParser)
+import Text.ParserCombinators.Parsec.Token (makeTokenParser)
 
 translate :: Parser Program
 translate  =  do whiteSpace

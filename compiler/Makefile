@@ -24,7 +24,7 @@ examples/%.c: examples/%.con $(COMPILER)
 	cat $< | $(COMPILER) > $@
 
 compiler/Compiler: compiler/*.hs
-	cd compiler && ghc --make Compiler.hs
+	cd compiler && ghc -Werror -fwarn-unused-imports --make Compiler.hs
 
 .PRECIOUS: examples/%.c
 
