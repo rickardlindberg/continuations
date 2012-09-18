@@ -23,7 +23,7 @@ examples/%: examples/%.c $(RUNTIME)
 examples/%.c: examples/%.con $(COMPILER)
 	cat $< | $(COMPILER) > $@
 
-compiler/Compiler: compiler/*.hs
+compiler/Compiler: compiler/*.hs compiler/Types/*.hs
 	cd compiler && ghc -Werror -fwarn-unused-imports --make Compiler.hs
 
 .PRECIOUS: examples/%.c
