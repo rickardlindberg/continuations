@@ -1,7 +1,7 @@
 module Analyze where
 
 import Optimize (optimize)
-import qualified Builtins as B
+import qualified Runtime.Builtins as B
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import qualified Types.Types as T
