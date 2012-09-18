@@ -3,7 +3,7 @@ module CodeGen where
 import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
-import Data
+import Types.Semantic
 
 generateCode :: Program -> String
 generateCode = runGenerator . outProgram

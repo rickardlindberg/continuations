@@ -1,10 +1,10 @@
 module Parser where
 
-import Data
 import qualified Text.ParserCombinators.Parsec.Token as P
 import Text.ParserCombinators.Parsec
 import Text.ParserCombinators.Parsec.Language (haskellDef)
 import Text.ParserCombinators.Parsec.Token (makeTokenParser)
+import Types.Syntax
 
 translate :: Parser Program
 translate  =  do whiteSpace

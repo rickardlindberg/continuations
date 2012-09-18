@@ -1,6 +1,6 @@
 module Builtins where
 
-import Data
+import Types.Semantic
 
 builtins =
     [ Builtin

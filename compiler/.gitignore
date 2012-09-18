@@ -7,4 +7,6 @@
 /examples/music.c
 /compiler/*.o
 /compiler/*.hi
+/compiler/**/*.o
+/compiler/**/*.hi
 /compiler/Compiler
