@@ -12,3 +12,4 @@
 /compiler/**/*.o
 /compiler/**/*.hi
 /compiler/Compiler
+/compiler/Debugger

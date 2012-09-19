@@ -41,4 +41,5 @@ Additional ideas implemented in `/compiler`:
 
 * Generate implementation of built in functions
 * Syntactic sugar for let expressions
+* GUI for debugging/inspecting
 * TODO: Perform type checking

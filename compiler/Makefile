@@ -11,7 +11,7 @@ HS_FILES := $(shell find compiler -name '*.hs')
 
 COMPILER  = compiler/Compiler
 
-test: tests/test-runtime $(EXAMPLES)
+all: compiler/Debugger tests/test-runtime $(EXAMPLES)
 	./tests/test-runtime
 	./examples/pythagoras
 	./examples/odd-even
@@ -30,6 +30,9 @@ examples/%.c: examples/%.con $(COMPILER)
 compiler/Compiler: $(HS_FILES)
 	cd compiler && ghc -Werror -fwarn-unused-imports --make Compiler.hs
 
+compiler/Debugger: $(HS_FILES)
+	cd compiler && ghc -Werror -fwarn-unused-imports --make Debugger.hs
+
 .PRECIOUS: examples/%.c
 
 .PHONY: clean
@@ -40,3 +43,4 @@ clean:
 	find compiler -name '*.o' | xargs rm -f
 	find compiler -name '*.hi' | xargs rm -f
 	rm -f compiler/Compiler
+	rm -f compiler/Debugger
