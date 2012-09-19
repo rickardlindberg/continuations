@@ -1,6 +1,6 @@
-import Analyze (syntaxToSemantic)
-import CodeGen (generateCode)
-import Parser (translate)
+import Stages.Analyze (syntaxToSemantic)
+import Stages.CodeGen (generateCode)
+import Stages.Parser (translate)
 import Text.ParserCombinators.Parsec (parse)
 
 main :: IO ()

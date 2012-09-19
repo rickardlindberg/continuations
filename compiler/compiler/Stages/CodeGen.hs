@@ -1,4 +1,4 @@
-module CodeGen where
+module Stages.CodeGen where
 
 import CodeGenHelper
 import Control.Monad

@@ -1,10 +1,10 @@
-module Analyze where
+module Stages.Analyze where
 
-import Optimize (optimize)
 import qualified Runtime.Builtins as B
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import qualified Types.Types as T
+import Stages.Optimize (optimize)
 
 syntaxToSemantic :: Syn.Program -> Sem.Program
 syntaxToSemantic = optimize . addBuiltins . convertProgram

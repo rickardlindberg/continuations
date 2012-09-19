@@ -1,4 +1,4 @@
-module Optimize where
+module Stages.Optimize where
 
 import Types.Semantic
 

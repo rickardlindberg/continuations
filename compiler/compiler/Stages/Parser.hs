@@ -1,4 +1,4 @@
-module Parser where
+module Stages.Parser where
 
 import Control.Monad
 import qualified Text.ParserCombinators.Parsec.Token as P

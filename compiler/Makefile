@@ -6,6 +6,8 @@ RUNTIME_C = runtime/*.c
 RUNTIME_H = runtime/*.h
 RUNTIME   = $(RUNTIME_C) $(RUNTIME_H)
 
+HS_FILES := $(shell find compiler -name '*.hs')
+
 COMPILER  = compiler/Compiler
 
 test: tests/test-runtime $(EXAMPLES)
@@ -23,7 +25,7 @@ examples/%: examples/%.c $(RUNTIME)
 examples/%.c: examples/%.con $(COMPILER)
 	cat $< | $(COMPILER) > $@
 
-compiler/Compiler: compiler/*.hs compiler/Types/*.hs compiler/Runtime/*.hs
+compiler/Compiler: $(HS_FILES)
 	cd compiler && ghc -Werror -fwarn-unused-imports --make Compiler.hs
 
 .PRECIOUS: examples/%.c
@@ -33,6 +35,6 @@ clean:
 	rm -f tests/test-runtime
 	rm -f $(EXAMPLES)
 	rm -f examples/*.c
-	rm -f compiler/*.o
-	rm -f compiler/*.hi
+	find compiler -name '*.o' | xargs rm -f
+	find compiler -name '*.hi' | xargs rm -f
 	rm -f compiler/Compiler
