@@ -7,11 +7,9 @@ RUNTIME_C = runtime/*.c
 RUNTIME_H = runtime/*.h
 RUNTIME   = $(RUNTIME_C) $(RUNTIME_H)
 
-HS_FILES := $(shell find compiler -name '*.hs')
+COMPILER  = compiler/conc
 
-COMPILER  = compiler/Compiler
-
-all: compiler/Debugger tests/test-runtime $(EXAMPLES)
+all: compiler/conc-debugger tests/test-runtime $(EXAMPLES)
 	./tests/test-runtime
 	./examples/pythagoras
 	./examples/odd-even
@@ -27,11 +25,13 @@ examples/%: examples/%.c $(RUNTIME)
 examples/%.c: examples/%.con $(COMPILER)
 	cat $< | $(COMPILER) > $@
 
-compiler/Compiler: $(HS_FILES)
-	cd compiler && ghc -Werror -fwarn-unused-imports --make Compiler.hs
+HS_FILES := $(shell find compiler -name '*.hs')
 
-compiler/Debugger: $(HS_FILES)
-	cd compiler && ghc -Werror -fwarn-unused-imports --make Debugger.hs
+compiler/conc: $(HS_FILES)
+	cd compiler && ghc -o conc -Werror -fwarn-unused-imports --make Compiler.hs
+
+compiler/conc-debugger: $(HS_FILES)
+	cd compiler && ghc -o conc-debugger -Werror -fwarn-unused-imports --make Debugger.hs
 
 .PRECIOUS: examples/%.c
 
@@ -42,5 +42,5 @@ clean:
 	rm -f examples/*.c
 	find compiler -name '*.o' | xargs rm -f
 	find compiler -name '*.hi' | xargs rm -f
-	rm -f compiler/Compiler
-	rm -f compiler/Debugger
+	rm -f compiler/conc
+	rm -f compiler/conc-debugger
