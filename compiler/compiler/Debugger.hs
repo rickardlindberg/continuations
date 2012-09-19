@@ -13,7 +13,7 @@ main = do
     mainGUI
 
 setupMainWindow = do
-    builder       <- builderFromFile "Debugger.glade"
+    builder       <- builderFromFile "debugger-interface.glade"
 
     mainWindow    <- builderGetObject builder castToWindow   "windowMain"
     sourceText    <- builderGetObject builder castToTextView "textSource"
