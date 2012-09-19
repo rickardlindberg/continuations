@@ -1,51 +1,29 @@
 module Runtime.CPC where
 
-import Stages.Analyze (syntaxToSemantic)
-import Stages.CodeGen (generateCode)
-import Stages.Parser (translate)
 import System
 import System.Directory
 import System.FilePath
 import System.Process
-import Text.ParserCombinators.Parsec (parse)
 
-runtime = "cpc"
+generateAndCompile :: FilePath -> FilePath -> String -> FilePath -> IO ()
+generateAndCompile srcPath runtimeDir compiledCode buildDir = do
 
-compile :: FilePath -> IO ()
-compile srcFilePath = do
+    let destPath     = buildDir </>
+                       takeBaseName srcPath ++ ".c"
 
-    let runtimeDir = "runtime"
+    let destName     = takeFileName destPath
 
-    let runtimeH   = runtimeDir </> "runtime.h"
-    let runtimeC   = runtimeDir </> "runtime.c"
+    let destBinName  = takeBaseName destPath
 
-    let buildDir   = takeDirectory srcFilePath </>
-                     takeBaseName srcFilePath ++ "-conc-build-" ++ runtime
+    let makefilePath = buildDir </> "Makefile"
 
-    let destFile   = buildDir </>
-                     takeBaseName srcFilePath ++ ".c"
+    let runtimeH     = runtimeDir </> "runtime.h"
+    let runtimeC     = runtimeDir </> "runtime.c"
 
-    input <- readFile srcFilePath
-    case parse translate srcFilePath input of
-        Left  error   -> print error
-        Right program -> do
+    let makefileCode = destBinName ++ ": " ++ destName ++ " runtime.c runtime.h\n\tgcc -lm -o " ++ destBinName ++ " " ++ destName ++ " runtime.c\n"
 
-            createDirectoryIfMissing True buildDir
-
-            writeFile destFile (generateCode (syntaxToSemantic program))
-
-            copyFile runtimeH (buildDir </> "runtime.h")
-            copyFile runtimeC (buildDir </> "runtime.c")
-
-            let makefile = buildDir </> "Makefile"
-            let oo = dropExtension (takeBaseName destFile)
-            let makefileLines = [ oo ++ ": " ++ takeFileName destFile ++ " runtime.c runtime.h\n"
-                                , "\t gcc -lm -o " ++ oo ++ " " ++ takeFileName destFile ++ " runtime.c\n"
-                                ]
-
-            writeFile makefile (concat makefileLines)
-
-            setCurrentDirectory buildDir
-
-            res <- rawSystem "make" []
-            exitWith res
+    writeFile destPath compiledCode
+    writeFile makefilePath makefileCode
+    copyFile runtimeH (buildDir </> "runtime.h")
+    copyFile runtimeC (buildDir </> "runtime.c")
+    setCurrentDirectory buildDir >> rawSystem "make" [] >>= exitWith
