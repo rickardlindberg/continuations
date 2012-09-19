@@ -1,29 +1,29 @@
 all: compiler/conc-debugger \
      tests/test-runtime \
-     examples/pythagoras-conc-build/pythagoras \
-     examples/odd-even-conc-build/odd-even \
-     examples/music-conc-build/music \
-     examples/lists-conc-build/lists
+     examples/pythagoras-conc-build-cpc/pythagoras \
+     examples/odd-even-conc-build-cpc/odd-even \
+     examples/music-conc-build-cpc/music \
+     examples/lists-conc-build-cpc/lists
 	./tests/test-runtime
-	./examples/pythagoras-conc-build/pythagoras
-	./examples/odd-even-conc-build/odd-even
-	./examples/music-conc-build/music
-	./examples/lists-conc-build/lists
+	./examples/pythagoras-conc-build-cpc/pythagoras
+	./examples/odd-even-conc-build-cpc/odd-even
+	./examples/music-conc-build-cpc/music
+	./examples/lists-conc-build-cpc/lists
 
 # EXAMPLES
 
 COMPILER_DEPS = ./compiler/conc ./runtime/runtime.c ./runtime/runtime.h
 
-examples/pythagoras-conc-build/pythagoras: examples/pythagoras.con $(COMPILER_DEPS)
+examples/pythagoras-conc-build-cpc/pythagoras: examples/pythagoras.con $(COMPILER_DEPS)
 	./compiler/conc $<
 
-examples/odd-even-conc-build/odd-even: examples/odd-even.con $(COMPILER_DEPS)
+examples/odd-even-conc-build-cpc/odd-even: examples/odd-even.con $(COMPILER_DEPS)
 	./compiler/conc $<
 
-examples/music-conc-build/music: examples/music.con $(COMPILER_DEPS)
+examples/music-conc-build-cpc/music: examples/music.con $(COMPILER_DEPS)
 	./compiler/conc $<
 
-examples/lists-conc-build/lists: examples/lists.con $(COMPILER_DEPS)
+examples/lists-conc-build-cpc/lists: examples/lists.con $(COMPILER_DEPS)
 	./compiler/conc $<
 
 # TEST FOR RUNTIME
@@ -48,6 +48,6 @@ clean:
 	rm -f compiler/conc
 	rm -f compiler/conc-debugger
 	rm -f tests/test-runtime
-	rm -rf examples/*-conc-build
+	rm -rf examples/*-conc-build-*
 	find compiler -name '*.o' | xargs rm -f
 	find compiler -name '*.hi' | xargs rm -f
