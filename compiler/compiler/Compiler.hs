@@ -1,4 +1,6 @@
-import Runtime.CPC
+import qualified Data.Map as M
+import qualified Runtime.CArduino as CArduino
+import qualified Runtime.CPC as CPC
 import Stages.Analyze (syntaxToSemantic)
 import Stages.CodeGen (generateCode)
 import Stages.Parser (translate)
@@ -7,13 +9,25 @@ import System (exitFailure, getArgs)
 import System.FilePath
 import Text.ParserCombinators.Parsec (parse)
 
+runtimes = M.fromList [ ("cpc"     , CPC.generateAndCompile)
+                      , ("carduino", CArduino.generateAndCompile)
+                      ]
+
 main :: IO ()
 main = do
-    [srcPath] <- getArgs
+    [srcPath, runtimeName] <- getArgs
+
     let runtimeDir = "runtime"
-    let runtimeName = "cpc"
+
     let buildDir   = takeDirectory srcPath </>
                      takeBaseName srcPath ++ "-conc-build-" ++ runtimeName
+
+    case M.lookup runtimeName runtimes of
+        Nothing -> exitFailure
+        _       -> return ()
+
+    let (Just generateAndCompile) = M.lookup runtimeName runtimes
+
     input <- readFile srcPath
     case parse translate srcPath input of
         Left  error -> do
@@ -24,5 +38,5 @@ main = do
             generateAndCompile
                 srcPath
                 runtimeDir
-                (generateCode (syntaxToSemantic program))
+                (generateCode runtimeName (syntaxToSemantic program))
                 buildDir
