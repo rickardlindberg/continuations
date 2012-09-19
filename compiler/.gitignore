@@ -5,6 +5,8 @@
 /examples/odd-even.c
 /examples/music
 /examples/music.c
+/examples/lists
+/examples/lists.c
 /compiler/*.o
 /compiler/*.hi
 /compiler/**/*.o

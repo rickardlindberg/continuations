@@ -1,6 +1,7 @@
 EXAMPLES  = examples/pythagoras \
 	    examples/odd-even \
-	    examples/music
+	    examples/music \
+	    examples/lists
 
 RUNTIME_C = runtime/*.c
 RUNTIME_H = runtime/*.h
@@ -15,6 +16,7 @@ test: tests/test-runtime $(EXAMPLES)
 	./examples/pythagoras
 	./examples/odd-even
 	./examples/music
+	./examples/lists
 
 tests/test-runtime: tests/test-runtime.c $(RUNTIME)
 	gcc -Wall -g -Iruntime -lm -o $@ $< $(RUNTIME_C)

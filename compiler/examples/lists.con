@@ -1,0 +1,22 @@
+let main =
+    \() -> createNumberList1 \(list) -> printNumberList list
+    exit
+
+let createNumberList1 =
+    \(k) -> cons 5 nil
+    \(l) -> cons 4 l
+    \(l) -> cons 3 l
+    \(l) -> cons 2 l
+    \(l) -> cons 1 l
+    \(l) -> k l
+
+let cons = \(car, cdr, k) ->
+    k \(hasItem, empty) -> hasItem car cdr
+
+let nil = \(hasItem, empty) ->
+    empty
+
+let printNumberList = \(list, k) ->
+    list
+        (\(car, cdr)-> printNumber car (\() -> printNumberList cdr k))
+        (\()        -> k)
