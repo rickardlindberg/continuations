@@ -1,7 +1,7 @@
-module Backend where
+module Stages.Backend where
 
-import qualified Backends.CArduino as CArduino
-import qualified Backends.CPC as CPC
+import qualified Stages.Backends.CArduino as CArduino
+import qualified Stages.Backends.CPC as CPC
 
 data Backend = CPC | CArduino
 

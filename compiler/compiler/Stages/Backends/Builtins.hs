@@ -1,4 +1,4 @@
-module Backends.Builtins where
+module Stages.Backends.Builtins where
 
 import qualified Types.Types as T
 

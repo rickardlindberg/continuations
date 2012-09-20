@@ -1,4 +1,4 @@
-import qualified Backend as Backend
+import qualified Stages.Backend as Backend
 import Stages.Analyze (syntaxToSemantic)
 import Stages.Parser (translate)
 import System.Directory

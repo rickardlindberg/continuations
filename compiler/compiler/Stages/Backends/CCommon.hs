@@ -1,4 +1,4 @@
-module Backends.CCommon where
+module Stages.Backends.CCommon where
 
 import CodeGenHelper
 import Control.Monad

@@ -11,6 +11,8 @@
 /compiler/*.hi
 /compiler/**/*.o
 /compiler/**/*.hi
+/compiler/**/**/*.o
+/compiler/**/**/*.hi
 /compiler/conc
 /compiler/conc-debugger
 /examples/*-conc-build-*

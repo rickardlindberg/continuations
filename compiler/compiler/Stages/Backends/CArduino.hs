@@ -1,6 +1,6 @@
-module Backends.CArduino where
+module Stages.Backends.CArduino where
 
-import Backends.CCommon (generateCode)
+import Stages.Backends.CCommon (generateCode)
 import System
 import System.Directory
 import System.FilePath

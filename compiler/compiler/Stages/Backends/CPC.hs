@@ -1,6 +1,6 @@
-module Backends.CPC where
+module Stages.Backends.CPC where
 
-import Backends.CCommon (generateCode)
+import Stages.Backends.CCommon (generateCode)
 import System
 import System.Directory
 import System.FilePath
