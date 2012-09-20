@@ -1,10 +1,9 @@
 import qualified Stages.Backend as Backend
 import Stages.Analyze (syntaxToSemantic)
-import Stages.Parser (translate)
+import Stages.Parser (textToSyntax)
 import System.Directory
 import System (exitFailure, getArgs)
 import System.FilePath
-import Text.ParserCombinators.Parsec (parse)
 
 main :: IO ()
 main = do
@@ -19,8 +18,8 @@ main = do
 
     input            <- readFile srcPath
 
-    case parse translate srcPath input of
-        Left  error   -> print error >> exitFailure
+    case textToSyntax srcPath input of
+        Left  error   -> putStrLn error >> exitFailure
         Right program -> do
             case syntaxToSemantic program of
                 Left  error   -> putStrLn error >> exitFailure

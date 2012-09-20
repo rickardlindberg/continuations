@@ -7,6 +7,12 @@ import Text.ParserCombinators.Parsec.Language (haskellDef)
 import Text.ParserCombinators.Parsec.Token (makeTokenParser)
 import Types.Syntax
 
+textToSyntax :: FilePath -> String -> Either String Program
+textToSyntax srcPath input =
+    case parse translate srcPath input of
+        Left  error   -> Left $ show error
+        Right program -> Right program
+
 translate :: Parser Program
 translate  =  do whiteSpace
                  p <- program
