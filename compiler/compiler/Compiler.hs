@@ -1,6 +1,6 @@
+import qualified Backends.CArduino as CArduino
+import qualified Backends.CPC as CPC
 import qualified Data.Map as M
-import qualified Runtime.CArduino as CArduino
-import qualified Runtime.CPC as CPC
 import Stages.Analyze (syntaxToSemantic)
 import Stages.CodeGen (generateCode)
 import Stages.Parser (translate)

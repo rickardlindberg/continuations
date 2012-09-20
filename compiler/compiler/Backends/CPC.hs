@@ -1,4 +1,4 @@
-module Runtime.CPC where
+module Backends.CPC where
 
 import System
 import System.Directory

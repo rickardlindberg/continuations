@@ -1,4 +1,4 @@
-module Runtime.Builtins where
+module Backends.Builtins where
 
 import qualified Types.Types as T
 

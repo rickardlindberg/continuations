@@ -1,4 +1,4 @@
-module Runtime.CArduino where
+module Backends.CArduino where
 
 import System
 import System.Directory
