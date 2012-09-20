@@ -1,6 +1,4 @@
-import qualified Backends.CArduino as CArduino
-import qualified Backends.CPC as CPC
-import qualified Data.Map as M
+import qualified Backend as Backend
 import Stages.Analyze (syntaxToSemantic)
 import Stages.CodeGen (generateCode)
 import Stages.Parser (translate)
@@ -9,24 +7,16 @@ import System (exitFailure, getArgs)
 import System.FilePath
 import Text.ParserCombinators.Parsec (parse)
 
-runtimes = M.fromList [ ("cpc"     , CPC.generateAndCompile)
-                      , ("carduino", CArduino.generateAndCompile)
-                      ]
-
 main :: IO ()
 main = do
-    [srcPath, runtimeName] <- getArgs
+    [srcPath, backendName] <- getArgs
 
-    let runtimeDir = "runtime"
+    let Just backend = Backend.fromString backendName
 
-    let buildDir   = takeDirectory srcPath </>
-                     takeBaseName srcPath ++ "-conc-build-" ++ runtimeName
+    let runtimeDir   = "runtime"
 
-    case M.lookup runtimeName runtimes of
-        Nothing -> exitFailure
-        _       -> return ()
-
-    let (Just generateAndCompile) = M.lookup runtimeName runtimes
+    let buildDir     = takeDirectory srcPath </>
+                       takeBaseName srcPath ++ "-conc-build-" ++ Backend.toString backend
 
     input <- readFile srcPath
     case parse translate srcPath input of
@@ -35,8 +25,8 @@ main = do
             exitFailure
         Right program -> do
             createDirectoryIfMissing True buildDir
-            generateAndCompile
+            (Backend.generateAndCompile backend)
                 srcPath
                 runtimeDir
-                (generateCode runtimeName (syntaxToSemantic program))
+                (generateCode backendName (syntaxToSemantic program))
                 buildDir
