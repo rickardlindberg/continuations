@@ -17,15 +17,17 @@ main = do
     let buildDir     = takeDirectory srcPath </>
                        takeBaseName srcPath ++ "-conc-build-" ++ Backend.toString backend
 
-    input <- readFile srcPath
+    input            <- readFile srcPath
+
     case parse translate srcPath input of
-        Left  error -> do
-            print error
-            exitFailure
+        Left  error   -> print error >> exitFailure
         Right program -> do
-            createDirectoryIfMissing True buildDir
-            (Backend.generateAndCompile backend)
-                srcPath
-                runtimeDir
-                (syntaxToSemantic program)
-                buildDir
+            case syntaxToSemantic program of
+                Left  error   -> putStrLn error >> exitFailure
+                Right program -> do
+                    createDirectoryIfMissing True buildDir
+                    (Backend.generateAndCompile backend)
+                        srcPath
+                        runtimeDir
+                        program
+                        buildDir

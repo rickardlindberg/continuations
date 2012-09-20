@@ -6,8 +6,8 @@ import qualified Types.Syntax as Syn
 import qualified Types.Types as T
 import Stages.Optimize (optimize)
 
-syntaxToSemantic :: Syn.Program -> Sem.Program
-syntaxToSemantic = optimize . addBuiltins . convertProgram
+syntaxToSemantic :: Syn.Program -> Either String Sem.Program
+syntaxToSemantic = Right . optimize . addBuiltins . convertProgram
 
 convertProgram :: Syn.Program -> Sem.Program
 convertProgram (Syn.Program lets)           = Sem.Program (map convertLet lets)

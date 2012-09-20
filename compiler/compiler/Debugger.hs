@@ -38,9 +38,10 @@ setupMainWindow = do
                 textBufferSetText semanticTextB ""
                 textBufferSetText genTextB      ""
             Right program -> do
-                let syntax   = syntaxToString program
-                let semantic = semanticToString (syntaxToSemantic program)
-                let gen      = generateCode False (syntaxToSemantic program)
+                let syntax      = syntaxToString program
+                let (Right sem) = syntaxToSemantic program
+                let semantic    = semanticToString sem
+                let gen         = generateCode False sem
                 textBufferSetText syntaxTextB   syntax
                 textBufferSetText semanticTextB semantic
                 textBufferSetText genTextB      gen
