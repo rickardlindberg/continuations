@@ -1,6 +1,6 @@
 module Backends.CArduino where
 
-import Stages.CodeGen (generateCode)
+import Backends.CCommon (generateCode)
 import System
 import System.Directory
 import System.FilePath

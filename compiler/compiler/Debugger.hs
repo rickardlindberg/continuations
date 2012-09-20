@@ -1,11 +1,11 @@
 import Graphics.UI.Gtk
 
+import Backends.CCommon (generateCode)
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import Stages.Analyze (syntaxToSemantic)
-import Stages.CodeGen (generateCode)
 import Stages.Parser (translate)
 import Text.ParserCombinators.Parsec (parse)
 
