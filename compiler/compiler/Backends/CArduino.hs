@@ -1,12 +1,16 @@
 module Backends.CArduino where
 
+import Stages.CodeGen (generateCode)
 import System
 import System.Directory
 import System.FilePath
 import System.Process
+import Types.Semantic
 
-generateAndCompile :: FilePath -> FilePath -> String -> FilePath -> IO ()
-generateAndCompile srcPath runtimeDir compiledCode buildDir = do
+generateAndCompile :: FilePath -> FilePath -> Program -> FilePath -> IO ()
+generateAndCompile srcPath runtimeDir program buildDir = do
+
+    let compiledCode = generateCode True program
 
     let destPath     = buildDir </>
                        takeBaseName srcPath ++ ".cpp"

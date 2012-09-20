@@ -40,7 +40,7 @@ setupMainWindow = do
             Right program -> do
                 let syntax   = syntaxToString program
                 let semantic = semanticToString (syntaxToSemantic program)
-                let gen      = generateCode "cpc" (syntaxToSemantic program)
+                let gen      = generateCode False (syntaxToSemantic program)
                 textBufferSetText syntaxTextB   syntax
                 textBufferSetText semanticTextB semantic
                 textBufferSetText genTextB      gen

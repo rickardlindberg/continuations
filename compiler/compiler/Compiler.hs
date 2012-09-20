@@ -1,6 +1,5 @@
 import qualified Backend as Backend
 import Stages.Analyze (syntaxToSemantic)
-import Stages.CodeGen (generateCode)
 import Stages.Parser (translate)
 import System.Directory
 import System (exitFailure, getArgs)
@@ -28,5 +27,5 @@ main = do
             (Backend.generateAndCompile backend)
                 srcPath
                 runtimeDir
-                (generateCode backendName (syntaxToSemantic program))
+                (syntaxToSemantic program)
                 buildDir

@@ -6,15 +6,15 @@ import Control.Monad.Trans.State.Lazy as ST
 import qualified Types.Types as T
 import Types.Semantic
 
-generateCode :: String -> Program -> String
-generateCode runtimeName = runGenerator . (outProgram runtimeName)
+generateCode :: Bool -> Program -> String
+generateCode asLibrary = runGenerator . (outProgram asLibrary)
 
-outProgram :: String -> Program -> ST.State AccumulatedCode ()
-outProgram runtimeName (Program lets) = do
+outProgram :: Bool -> Program -> ST.State AccumulatedCode ()
+outProgram asLibrary (Program lets) = do
     addInclude "\"runtime.h\""
     writeLine ""
     mapM_ outLet lets
-    outMain runtimeName
+    outMain asLibrary
 
 outLet :: Let -> ST.State AccumulatedCode ()
 outLet (Let name term) = outTerm term >>= addGlobalName name
@@ -65,10 +65,10 @@ outFunction (T.Function argTypes) (Builtin includes code) = do
         cType T.Number = "Number"
         cType (T.Function _) = "Closure"
 
-outMain :: String -> ST.State AccumulatedCode ()
-outMain runtimeName = do
+outMain :: Bool -> ST.State AccumulatedCode ()
+outMain asLibrary = do
     state <- get
-    if runtimeName == "caruino"
+    if asLibrary
         then writeLine "void run() {"
         else writeLine "int main() {"
     writeLine "    Env env;"
@@ -87,7 +87,7 @@ outMain runtimeName = do
     writeLine "    }"
     writeLine ""
     writeLine "    free_ref_countable(env);"
-    when (runtimeName /= "caruino") $ do
+    when (not asLibrary) $ do
         writeLine ""
         writeLine "    return 0;"
     writeLine "}"
