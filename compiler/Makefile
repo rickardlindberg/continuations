@@ -40,10 +40,10 @@ tests/test-runtime: tests/test-runtime.c runtime/*.h runtime/*.c
 HS_FILES := $(shell find compiler -name '*.hs')
 
 compiler/conc: $(HS_FILES)
-	cd compiler && ghc -o conc -Werror -fwarn-unused-imports --make Compiler.hs
+	cd compiler && ghc -O1 -o conc -Werror -fwarn-unused-imports --make Compiler.hs
 
 compiler/conc-debugger: $(HS_FILES)
-	cd compiler && ghc -o conc-debugger -Werror -fwarn-unused-imports --make Debugger.hs
+	cd compiler && ghc -O1 -o conc-debugger -Werror -fwarn-unused-imports --make Debugger.hs
 
 # CLEAN ALL
 
