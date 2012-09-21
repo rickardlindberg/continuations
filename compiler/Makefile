@@ -1,10 +1,16 @@
-all: compiler/conc-debugger \
-     tests/test-runtime \
-     examples/pythagoras-conc-build-cpc/pythagoras \
-     examples/odd-even-conc-build-cpc/odd-even \
-     examples/music-conc-build-cpc/music \
-     examples/music-conc-build-carduino/music \
-     examples/lists-conc-build-cpc/lists
+fasttest: compiler/conc-debugger \
+          tests/test-runtime \
+          examples/pythagoras-conc-build-cpc/pythagoras
+	./tests/test-runtime
+	./examples/pythagoras-conc-build-cpc/pythagoras
+
+test: compiler/conc-debugger \
+      tests/test-runtime \
+      examples/pythagoras-conc-build-cpc/pythagoras \
+      examples/odd-even-conc-build-cpc/odd-even \
+      examples/music-conc-build-cpc/music \
+      examples/music-conc-build-carduino/music \
+      examples/lists-conc-build-cpc/lists
 	./tests/test-runtime
 	./examples/pythagoras-conc-build-cpc/pythagoras
 	./examples/odd-even-conc-build-cpc/odd-even
@@ -13,7 +19,7 @@ all: compiler/conc-debugger \
 
 # EXAMPLES
 
-COMPILER_DEPS = ./compiler/conc ./runtime/runtime.c ./runtime/runtime.h
+COMPILER_DEPS = compiler/conc runtime/runtime.c runtime/runtime.h
 
 examples/pythagoras-conc-build-cpc/pythagoras: examples/pythagoras.con $(COMPILER_DEPS)
 	./compiler/conc $< cpc
