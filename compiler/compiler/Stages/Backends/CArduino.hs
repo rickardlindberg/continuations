@@ -12,19 +12,25 @@ import Types.Semantic
 builtins =
     [ CCommon.CCommonBuiltin
         "setTempo" (T.Function [T.Number, T.Function []]) $ do
+            addInclude "\"extra.h\""
             addInclude "\"WProgram.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
+            writeLine "tempo = (unsigned int)arg0->value;"
             writeLine "Serial.print(\"set tempo: \");"
-            writeLine "Serial.println(arg0->value);"
+            writeLine "Serial.println(tempo);"
             writeLine "return create_call(k, next_args);"
     , CCommon.CCommonBuiltin
         "setBeat1" (T.Function [T.Number, T.Function []]) $ do
+            addInclude "\"extra.h\""
             addInclude "\"WProgram.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
+            writeLine "beat1 = (unsigned int)arg0->value;"
+            writeLine "tone(3, beat1);"
+            writeLine "delay((60*1000)/tempo);"
             writeLine "Serial.print(\"set beat 1: \");"
-            writeLine "Serial.println(arg0->value);"
+            writeLine "Serial.println(beat1);"
             writeLine "return create_call(k, next_args);"
     ] ++ CCommon.commonCBuiltins
 
@@ -47,6 +53,8 @@ generateAndCompile srcPath runtimeDir program buildDir = do
 
     let makefilePath = buildDir </> "Makefile"
 
+    let extraH       = buildDir </> "extra.h"
+
     let sketchPath   = buildDir </> "sketch.pde"
 
     let runtimeH     = runtimeDir </> "runtime.h"
@@ -56,6 +64,7 @@ generateAndCompile srcPath runtimeDir program buildDir = do
     writeFile destHPath destHCode
     writeFile makefilePath makefileCode
     writeFile sketchPath sketchCode
+    writeFile extraH extraCode
     copyFile runtimeH (buildDir </> "runtime.h")
     copyFile runtimeC (buildDir </> "runtime.cpp")
     setCurrentDirectory buildDir >> rawSystem "make" [] >>= exitWith
@@ -78,24 +87,22 @@ makefileCode = unlines
 sketchCode = unlines
     [ "#include \"music.h\""
     , ""
-    , "const int ledPin = 13;"
-    , ""
     , "void setup() {"
-    , "  pinMode(ledPin, OUTPUT);"
+    , "  pinMode(3, OUTPUT);"
+    , "  pinMode(13, OUTPUT);"
+    , "  pinMode(12, OUTPUT);"
     , "  Serial.begin(9600);"
     , "}"
     , ""
     , "void loop()"
     , "{"
-    , "    Serial.println(\"low\");"
-    , "    digitalWrite(ledPin, LOW);"
-    , "    delay(1000);"
-    , "    Serial.println(\"high\");"
-    , "    digitalWrite(ledPin, HIGH);"
-    , "    delay(1000);"
-    , "    Serial.println(\"music\");"
     , "    run();"
     , "}"
+    ]
+
+extraCode = unlines
+    [ "unsigned int tempo = 120;"
+    , "unsigned int beat1 = 0;"
     ]
 
 destHCode = unlines
