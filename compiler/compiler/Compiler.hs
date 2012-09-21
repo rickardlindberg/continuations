@@ -21,11 +21,11 @@ main = do
     case textToSyntax srcPath input of
         Left  error   -> putStrLn error >> exitFailure
         Right program -> do
-            case syntaxToSemantic backend program of
+            case syntaxToSemantic (Backend.builtinsFor backend) program of
                 Left  error   -> putStrLn error >> exitFailure
                 Right program -> do
                     createDirectoryIfMissing True buildDir
-                    (Backend.generateAndCompile backend)
+                    (Backend.generateAndCompileFor backend)
                         srcPath
                         runtimeDir
                         program

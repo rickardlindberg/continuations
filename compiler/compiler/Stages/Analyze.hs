@@ -4,11 +4,10 @@ import qualified Types.Builtin as B
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import qualified Types.Types as T
-import Stages.Backend (Backend(), builtins)
 import Stages.Optimize (optimize)
 
-syntaxToSemantic :: Backend -> Syn.Program -> Either String Sem.Program
-syntaxToSemantic backend = Right . optimize . (addBuiltins backend) . convertProgram
+syntaxToSemantic :: [B.Builtin] -> Syn.Program -> Either String Sem.Program
+syntaxToSemantic builtins = Right . optimize . (addBuiltins builtins) . convertProgram
 
 convertProgram :: Syn.Program -> Sem.Program
 convertProgram (Syn.Program lets)           = Sem.Program (map convertLet lets)
@@ -26,11 +25,11 @@ wrapWithLet (Syn.Let name term) innerTerms =
     , convertTerm term
     ]
 
-addBuiltins :: Backend -> Sem.Program -> Sem.Program
-addBuiltins backend (Sem.Program lets) = Sem.Program (builtinLets ++ lets)
+addBuiltins :: [B.Builtin] -> Sem.Program -> Sem.Program
+addBuiltins builtins (Sem.Program lets) = Sem.Program (builtinLets ++ lets)
     where
         builtinLets = map builtinToLet nonOverridenBuiltins
-        nonOverridenBuiltins = filter (\(b) -> B.name b `notElem` letNames) (builtins backend)
+        nonOverridenBuiltins = filter (\(b) -> B.name b `notElem` letNames) builtins
         letNames = map (\(Sem.Let name _) -> name) lets
 
 builtinToLet :: B.Builtin -> Sem.Let

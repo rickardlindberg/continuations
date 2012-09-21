@@ -14,8 +14,8 @@ toString :: Backend -> String
 toString CPC      = "cpc"
 toString CArduino = "carduino"
 
-generateAndCompile CPC      = CPC.generateAndCompile
-generateAndCompile CArduino = CArduino.generateAndCompile
+builtinsFor CPC      = CPC.getBuiltins
+builtinsFor CArduino = CArduino.getBuiltins
 
-builtins CPC      = CPC.getBuiltins
-builtins CArduino = CArduino.getBuiltins
+generateAndCompileFor CPC      = CPC.generateAndCompile
+generateAndCompileFor CArduino = CArduino.generateAndCompile
