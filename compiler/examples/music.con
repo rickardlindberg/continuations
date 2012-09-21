@@ -2,24 +2,126 @@ let main =
     \() -> playSong exit
 
 let playSong =
-    \(k) -> setTempo 120
-    \()  -> repeat 2 playIntro
-    \()  -> repeat 2 playVerse
-    \()  -> setTempo 200
-    \()  -> repeat 2 playVerse
+    \(k) -> playCScale
+    \()  -> repeat 3    playMasters
+    \()  -> repeat 1000 playSilence
     \()  -> k
 
-let playIntro =
-    \(k) -> setBeat1 A
-    \()  -> setBeat1 SILENCE
-    \()  -> setBeat1 A
+let playCScale =
+    \(k) -> setBeat1 C4
+    \()  -> setBeat1 D4
+    \()  -> setBeat1 E4
+    \()  -> setBeat1 F4
+    \()  -> setBeat1 G4
+    \()  -> setBeat1 A4
+    \()  -> setBeat1 B4
+    \()  -> setBeat1 C5
+
+    \()  -> setBeat2 C4 C4
+    \()  -> setBeat2 D4 D4
+    \()  -> setBeat2 E4 E4
+    \()  -> setBeat2 F4 F4
+    \()  -> setBeat2 G4 G4
+    \()  -> setBeat2 A4 A4
+    \()  -> setBeat2 B4 B4
+    \()  -> setBeat2 C5 C5
+
     \()  -> k
 
-let playVerse =
-    \(k) -> setBeat1 A2
-    \()  -> setBeat1 SILENCE
-    \()  -> setBeat1 A2
-    \()  -> k
+let playMasters =
+    \(k) -> setTempo 200
+    \()  -> masterIntro
+    \()  -> repeat 2 masterDesc
+    \()  -> masterDescFoo
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+    k
+
+let masterIntro =
+    \(k) -> setBeat1 E4
+    \()  -> setBeat1 E4
+    \()  -> setBeat1 E4
+    \()  -> setBeat1 E4
+    \()  -> setBeat1 D4
+    \()  -> setBeat1 D4
+    \()  -> setBeat1 CS4
+    \()  -> setBeat1 CS4
+    \()  -> setBeat1 C4
+    \()  -> setBeat1 C4
+    \()  -> setBeat1 C4
+    \()  -> setBeat1 C4
+    k
+
+let masterDesc =
+    \(k) -> masterDesc1
+    \()  -> masterDesc2
+    k
+
+let masterDesc1 =
+    \(k) -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 E4
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 DS4
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 D4
+        \()  -> setBeat1 D4
+        \()  -> setBeat1 CS4
+        \()  -> setBeat1 CS4
+        \()  -> setBeat1 C4
+        \()  -> setBeat1 C4
+        \()  -> setBeat1 C4
+        \()  -> setBeat1 C4
+    k
+
+let masterDesc2 =
+    \(k) -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 B4
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 AS4
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 A4
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 GS4
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 G4
+    \()  -> setBeat1 E3
+        \()  -> setBeat1 FS4
+    \()  -> setBeat1 E3
+    k
+
+let masterDescFoo = \(k) ->
+    let bamBam       = \(k) -> setBeat1 E3
+                       \()  -> setBeat1 F3
+                       k
+    let bamBamBam    = \(k) -> setBeat1 G3
+                       \()  -> setBeat1 FS3
+                       \()  -> setBeat1 E3
+                       k
+    in      bamBam \() -> setBeat1 B4
+    \()  -> bamBam \() -> setBeat1 C4
+    \()  -> bamBam \() -> setBeat1 CS4
+    \()  -> bamBam \() -> setBeat1 C4
+    \()  -> bamBam \() -> setBeat1 B4
+    \()  -> setBeat1 B4
+    \()  -> bamBam \() -> setBeat1 B4
+    \()  -> bamBam \() -> setBeat1 C4
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+    \()  -> repeat 2 bamBamBam
+    \()  -> setBeat1 E3
+    \()  -> setBeat1 E3
+    k
+
+let playSilence =
+    \(k) -> setBeat1 SILENCE k
 
 let repeat =
     \(times, playFn, k) ->
@@ -30,6 +132,94 @@ let repeat =
                 k
                 continue
 
-let A       = 440
-let A2      = 880
+let B0      = 31
+let C1      = 33
+let CS1     = 35
+let D1      = 37
+let DS1     = 39
+let E1      = 41
+let F1      = 44
+let FS1     = 46
+let G1      = 49
+let GS1     = 52
+let A1      = 55
+let AS1     = 58
+let B1      = 62
+let C2      = 65
+let CS2     = 69
+let D2      = 73
+let DS2     = 78
+let E2      = 82
+let F2      = 87
+let FS2     = 93
+let G2      = 98
+let GS2     = 104
+let A2      = 110
+let AS2     = 117
+let B2      = 123
+let C3      = 131
+let CS3     = 139
+let D3      = 147
+let DS3     = 156
+let E3      = 165
+let F3      = 175
+let FS3     = 185
+let G3      = 196
+let GS3     = 208
+let A3      = 220
+let AS3     = 233
+let B3      = 247
+let C4      = 262
+let CS4     = 277
+let D4      = 294
+let DS4     = 311
+let E4      = 330
+let F4      = 349
+let FS4     = 370
+let G4      = 392
+let GS4     = 415
+let A4      = 440
+let AS4     = 466
+let B4      = 494
+let C5      = 523
+let CS5     = 554
+let D5      = 587
+let DS5     = 622
+let E5      = 659
+let F5      = 698
+let FS5     = 740
+let G5      = 784
+let GS5     = 831
+let A5      = 880
+let AS5     = 932
+let B5      = 988
+let C6      = 1047
+let CS6     = 1109
+let D6      = 1175
+let DS6     = 1245
+let E6      = 1319
+let F6      = 1397
+let FS6     = 1480
+let G6      = 1568
+let GS6     = 1661
+let A6      = 1760
+let AS6     = 1865
+let B6      = 1976
+let C7      = 2093
+let CS7     = 2217
+let D7      = 2349
+let DS7     = 2489
+let E7      = 2637
+let F7      = 2794
+let FS7     = 2960
+let G7      = 3136
+let GS7     = 3322
+let A7      = 3520
+let AS7     = 3729
+let B7      = 3951
+let C8      = 4186
+let CS8     = 4435
+let D8      = 4699
+let DS8     = 4978
 let SILENCE = 0
+let CONT    = 0
