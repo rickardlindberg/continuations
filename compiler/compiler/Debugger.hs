@@ -2,12 +2,12 @@ import Graphics.UI.Gtk
 
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
+import qualified Stages.Backends.CPC as CPC
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import Stages.Analyze (syntaxToSemantic)
 import Stages.Backend()
-import Stages.Backends.CPC (getBuiltins)
-import Stages.Backends.CCommon (generateCode, Options(..), commonCBuiltins)
+import Stages.Backends.CCommon (generateCode, Options(..))
 import Stages.Parser (translate)
 import Text.ParserCombinators.Parsec (parse)
 
@@ -41,9 +41,9 @@ setupMainWindow = do
                 textBufferSetText genTextB      ""
             Right program -> do
                 let syntax      = syntaxToString program
-                let (Right sem) = syntaxToSemantic getBuiltins program
+                let (Right sem) = syntaxToSemantic CPC.exportedBuiltins program
                 let semantic    = semanticToString sem
-                let gen         = generateCode (Options False commonCBuiltins) sem
+                let gen         = generateCode (Options False CPC.builtins) sem
                 textBufferSetText syntaxTextB   syntax
                 textBufferSetText semanticTextB semantic
                 textBufferSetText genTextB      gen

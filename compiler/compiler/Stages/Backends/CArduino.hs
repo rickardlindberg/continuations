@@ -9,7 +9,7 @@ import System.FilePath
 import System.Process
 import Types.Semantic
 
-my =
+builtins =
     [ CCommon.CCommonBuiltin
         "setTempo" (T.Function [T.Number, T.Function []]) $ do
             addInclude "\"WProgram.h\""
@@ -26,16 +26,14 @@ my =
             writeLine "Serial.print(\"set beat 1: \");"
             writeLine "Serial.println(arg0->value);"
             writeLine "return create_call(k, next_args);"
-    ]
+    ] ++ CCommon.commonCBuiltins
 
-myBuiltins = my ++ CCommon.commonCBuiltins
-
-getBuiltins = CCommon.getBuiltins myBuiltins
+exportedBuiltins = CCommon.exportBuiltins builtins
 
 generateAndCompile :: FilePath -> FilePath -> Program -> FilePath -> IO ()
 generateAndCompile srcPath runtimeDir program buildDir = do
 
-    let compiledCode = CCommon.generateCode (CCommon.Options True myBuiltins) program
+    let compiledCode = CCommon.generateCode (CCommon.Options True builtins) program
 
     let destPath     = buildDir </>
                        takeBaseName srcPath ++ ".cpp"

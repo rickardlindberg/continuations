@@ -76,8 +76,8 @@ commonCBuiltins =
             writeLine "return create_call(k, next_args);"
     ]
 
-getBuiltins :: [CCommonBuiltin] -> [B.Builtin]
-getBuiltins = map toGeneralBuiltin
+exportBuiltins :: [CCommonBuiltin] -> [B.Builtin]
+exportBuiltins = map toGeneralBuiltin
     where
         toGeneralBuiltin (CCommonBuiltin name type_ _) = B.Builtin name type_
 
