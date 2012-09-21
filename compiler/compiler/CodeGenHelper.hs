@@ -5,14 +5,15 @@ import Control.Monad.Trans.State.Lazy as ST
 runGenerator :: ST.State AccumulatedCode a -> String
 runGenerator m = includesStr ++ bodyCode st
     where
-        st = ST.execState m (AccumulatedCode 0 [] [] "")
+        st = ST.execState m (AccumulatedCode 0 [] [] "" 0)
         includesStr = concatMap (\x -> "#include " ++ x ++ "\n") (includes st)
 
 data AccumulatedCode = AccumulatedCode
     { counter     :: Int
     , globalNames :: [(String, String)]
     , includes    :: [String]
-    , bodyCode   :: String
+    , bodyCode    :: String
+    , indentCount :: Int
     }
 
 addInclude :: String -> ST.State AccumulatedCode ()
@@ -22,7 +23,16 @@ addInclude include = ST.modify (\s -> s { includes = update (includes s) })
                  | otherwise        = x ++ [include]
 
 writeLine :: String -> ST.State AccumulatedCode ()
-writeLine line = ST.modify (\s -> s { bodyCode = bodyCode s ++ line ++ "\n" })
+writeLine line = ST.modify (\s -> s { bodyCode = bodyCode s ++ concatMap (const "    ") [1..indentCount s] ++ line ++ "\n" })
+
+indented :: ST.State AccumulatedCode () -> ST.State AccumulatedCode ()
+indented gen = indent >> gen >> dedent
+
+indent :: ST.State AccumulatedCode ()
+indent = ST.modify (\s -> s { indentCount = indentCount s + 1 })
+
+dedent :: ST.State AccumulatedCode ()
+dedent = ST.modify (\s -> s { indentCount = indentCount s - 1 })
 
 addGlobalName :: String -> String -> ST.State AccumulatedCode ()
 addGlobalName name code = ST.modify (\s -> s { globalNames = (name, code):globalNames s })
