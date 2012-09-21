@@ -21,7 +21,7 @@ main = do
     case textToSyntax srcPath input of
         Left  error   -> putStrLn error >> exitFailure
         Right program -> do
-            case syntaxToSemantic program of
+            case syntaxToSemantic backend program of
                 Left  error   -> putStrLn error >> exitFailure
                 Right program -> do
                     createDirectoryIfMissing True buildDir

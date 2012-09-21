@@ -5,6 +5,7 @@ import Control.Monad.Trans.State.Lazy as ST
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import Stages.Analyze (syntaxToSemantic)
+import Stages.Backend
 import Stages.Backends.CCommon (generateCode)
 import Stages.Parser (translate)
 import Text.ParserCombinators.Parsec (parse)
@@ -39,7 +40,7 @@ setupMainWindow = do
                 textBufferSetText genTextB      ""
             Right program -> do
                 let syntax      = syntaxToString program
-                let (Right sem) = syntaxToSemantic program
+                let (Right sem) = syntaxToSemantic CPC program
                 let semantic    = semanticToString sem
                 let gen         = generateCode False sem
                 textBufferSetText syntaxTextB   syntax
@@ -130,11 +131,10 @@ semanticToString = genDoc . writeProgram
             mapM_ writeTerm terms
             dedent
             dedent
-        writeBody (Sem.Builtin includes code) = do
+        writeBody (Sem.Builtin name) = do
             writeLine "BUILTIN"
             indent
-            writeLine "includes = ..."
-            writeLine "code = ..."
+            writeLine $ "name = " ++ name
             dedent
 
 -- Document writing langauge

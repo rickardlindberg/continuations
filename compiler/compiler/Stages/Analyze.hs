@@ -1,13 +1,14 @@
 module Stages.Analyze where
 
-import qualified Stages.Backends.Builtins as B
+import qualified Types.Builtin as B
 import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import qualified Types.Types as T
+import Stages.Backend (Backend(), builtins)
 import Stages.Optimize (optimize)
 
-syntaxToSemantic :: Syn.Program -> Either String Sem.Program
-syntaxToSemantic = Right . optimize . addBuiltins . convertProgram
+syntaxToSemantic :: Backend -> Syn.Program -> Either String Sem.Program
+syntaxToSemantic backend = Right . optimize . (addBuiltins backend) . convertProgram
 
 convertProgram :: Syn.Program -> Sem.Program
 convertProgram (Syn.Program lets)           = Sem.Program (map convertLet lets)
@@ -25,14 +26,12 @@ wrapWithLet (Syn.Let name term) innerTerms =
     , convertTerm term
     ]
 
-addBuiltins :: Sem.Program -> Sem.Program
-addBuiltins (Sem.Program lets) = Sem.Program (builtinLets ++ lets)
+addBuiltins :: Backend -> Sem.Program -> Sem.Program
+addBuiltins backend (Sem.Program lets) = Sem.Program (builtinLets ++ lets)
     where
         builtinLets = map builtinToLet nonOverridenBuiltins
-        nonOverridenBuiltins = filter (\(b) -> B.name b `notElem` letNames) B.builtins
+        nonOverridenBuiltins = filter (\(b) -> B.name b `notElem` letNames) (builtins backend)
         letNames = map (\(Sem.Let name _) -> name) lets
 
 builtinToLet :: B.Builtin -> Sem.Let
-builtinToLet builtin = Sem.Let (B.name builtin) (Sem.Function (B.fnType builtin) (b2b builtin))
-    where
-        b2b (B.Builtin n c t i) = (Sem.Builtin i c)
+builtinToLet builtin = Sem.Let (B.name builtin) (Sem.Function (B.type_ builtin) (Sem.Builtin (B.name builtin)))

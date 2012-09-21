@@ -10,9 +10,5 @@ data Term    = Identifier String
              | Number     Integer
              | Function   T.Type FnBody
 
-data FnBody  = Lambda  { args     :: [String]
-                       , terms    :: [Term]
-                       }
-             | Builtin { includes :: [String]
-                       , code     :: String
-                       }
+data FnBody  = Lambda  [String] [Term]
+             | Builtin String
