@@ -1,16 +1,18 @@
 module Stages.Backends.CPC where
 
-import Stages.Backends.CCommon (generateCode)
+import qualified Stages.Backends.CCommon as CCommon
 import System
 import System.Directory
 import System.FilePath
 import System.Process
 import Types.Semantic
 
+getBuiltins = CCommon.getBuiltins
+
 generateAndCompile :: FilePath -> FilePath -> Program -> FilePath -> IO ()
 generateAndCompile srcPath runtimeDir program buildDir = do
 
-    let compiledCode = generateCode False program
+    let compiledCode = CCommon.generateCode False program
 
     let destPath     = buildDir </>
                        takeBaseName srcPath ++ ".c"
