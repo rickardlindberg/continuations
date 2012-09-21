@@ -7,12 +7,14 @@ import System.FilePath
 import System.Process
 import Types.Semantic
 
-getBuiltins = CCommon.getBuiltins
+myBuiltins = CCommon.commonCBuiltins
+
+getBuiltins = CCommon.getBuiltins myBuiltins
 
 generateAndCompile :: FilePath -> FilePath -> Program -> FilePath -> IO ()
 generateAndCompile srcPath runtimeDir program buildDir = do
 
-    let compiledCode = CCommon.generateCode False program
+    let compiledCode = CCommon.generateCode (CCommon.Options False myBuiltins) program
 
     let destPath     = buildDir </>
                        takeBaseName srcPath ++ ".c"

@@ -15,7 +15,7 @@ data CCommonBuiltin = CCommonBuiltin
     , gen   :: ST.State AccumulatedCode ()
     }
 
-builtins =
+commonCBuiltins =
     [ CCommonBuiltin
         "times" (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
             writeLine "k = arg2;"
@@ -76,33 +76,38 @@ builtins =
             writeLine "return create_call(k, next_args);"
     ]
 
-getBuiltins :: [B.Builtin]
-getBuiltins = map toGeneralBuiltin builtins
+getBuiltins :: [CCommonBuiltin] -> [B.Builtin]
+getBuiltins = map toGeneralBuiltin
     where
         toGeneralBuiltin (CCommonBuiltin name type_ _) = B.Builtin name type_
 
-generateCode :: Bool -> Program -> String
-generateCode asLibrary = runGenerator . (outProgram asLibrary)
+data Options = Options
+    { isLibrary :: Bool
+    , builtinsX :: [CCommonBuiltin]
+    }
 
-outProgram :: Bool -> Program -> ST.State AccumulatedCode ()
-outProgram asLibrary (Program lets) = do
+generateCode :: Options -> Program -> String
+generateCode options = runGenerator . (outProgram options)
+
+outProgram :: Options -> Program -> ST.State AccumulatedCode ()
+outProgram options (Program lets) = do
     addInclude "\"runtime.h\""
     writeLine ""
-    mapM_ outLet lets
-    outMain asLibrary
+    mapM_ (outLet options) lets
+    outMain options
 
-outLet :: Let -> ST.State AccumulatedCode ()
-outLet (Let name term) = outTerm term >>= addGlobalName name
+outLet :: Options -> Let -> ST.State AccumulatedCode ()
+outLet options (Let name term) = outTerm options term >>= addGlobalName name
 
-outTerm :: Term -> ST.State AccumulatedCode String
-outTerm (Identifier s)   = return $ "env_lookup(env, \"" ++ s ++ "\")"
-outTerm (Number     n)   = return $ "const_number(" ++ show n ++ ")"
-outTerm (Function   t b) = outFunction t b
+outTerm :: Options -> Term -> ST.State AccumulatedCode String
+outTerm options (Identifier s)   = return $ "env_lookup(env, \"" ++ s ++ "\")"
+outTerm options (Number     n)   = return $ "const_number(" ++ show n ++ ")"
+outTerm options (Function   t b) = outFunction options t b
 
-outFunction :: T.Type -> FnBody -> ST.State AccumulatedCode String
-outFunction _ (Lambda args terms) = do
+outFunction :: Options -> T.Type -> FnBody -> ST.State AccumulatedCode String
+outFunction options _ (Lambda args terms) = do
     n <- nextCounter
-    terms <- mapM outTerm terms
+    terms <- mapM (outTerm options) terms
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
     writeLine $ "    Args next_args;"
     writeLine $ "    Closure closure;"
@@ -124,22 +129,22 @@ outFunction _ (Lambda args terms) = do
     writeLine $ "}"
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
-outFunction (T.Function argTypes) (Builtin name) = do
+outFunction options (T.Function argTypes) (Builtin name) = do
     n <- nextCounter
     writeLine $ "Call fn_" ++ show n ++ "(Env parent_env, Args args) {"
     forM (zip [0..] argTypes) $ \(i, argType) -> do
         writeLine $ "    " ++ cType argType ++ " arg" ++ show i ++ " = (" ++ cType argType ++ ")args_get(args, " ++ show i ++ ");"
     writeLine $ "    Closure k;"
     writeLine $ "    Args next_args;"
-    writeBuiltinCode name
+    writeBuiltinCode name (builtinsX options)
     writeLine $ "}"
     writeLine ""
     return $ "create_closure(&fn_" ++ show n ++ ", env)"
 
-outMain :: Bool -> ST.State AccumulatedCode ()
-outMain asLibrary = do
+outMain :: Options -> ST.State AccumulatedCode ()
+outMain options = do
     state <- get
-    if asLibrary
+    if isLibrary options
         then writeLine "void run() {"
         else writeLine "int main() {"
     writeLine "    Env env;"
@@ -158,7 +163,7 @@ outMain asLibrary = do
     writeLine "    }"
     writeLine ""
     writeLine "    free_ref_countable(env);"
-    when (not asLibrary) $ do
+    when (not (isLibrary options)) $ do
         writeLine ""
         writeLine "    return 0;"
     writeLine "}"
@@ -166,4 +171,4 @@ outMain asLibrary = do
 cType T.Number       = "Number"
 cType (T.Function _) = "Closure"
 
-writeBuiltinCode builtinName = gen $ fromJust $ find (\x -> name x == builtinName) builtins
+writeBuiltinCode builtinName builtins = gen $ fromJust $ find (\x -> name x == builtinName) builtins

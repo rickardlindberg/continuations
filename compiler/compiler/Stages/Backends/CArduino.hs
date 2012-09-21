@@ -1,18 +1,41 @@
 module Stages.Backends.CArduino where
 
+import CodeGenHelper
 import qualified Stages.Backends.CCommon as CCommon
+import qualified Types.Types as T
 import System
 import System.Directory
 import System.FilePath
 import System.Process
 import Types.Semantic
 
-getBuiltins = CCommon.getBuiltins
+my =
+    [ CCommon.CCommonBuiltin
+        "setTempo" (T.Function [T.Number, T.Function []]) $ do
+            addInclude "\"WProgram.h\""
+            writeLine "k = arg1;"
+            writeLine "next_args = create_args(0);"
+            writeLine "Serial.print(\"set tempo: \");"
+            writeLine "Serial.println(arg0->value);"
+            writeLine "return create_call(k, next_args);"
+    , CCommon.CCommonBuiltin
+        "setBeat1" (T.Function [T.Number, T.Function []]) $ do
+            addInclude "\"WProgram.h\""
+            writeLine "k = arg1;"
+            writeLine "next_args = create_args(0);"
+            writeLine "Serial.print(\"set beat 1: \");"
+            writeLine "Serial.println(arg0->value);"
+            writeLine "return create_call(k, next_args);"
+    ]
+
+myBuiltins = my ++ CCommon.commonCBuiltins
+
+getBuiltins = CCommon.getBuiltins myBuiltins
 
 generateAndCompile :: FilePath -> FilePath -> Program -> FilePath -> IO ()
 generateAndCompile srcPath runtimeDir program buildDir = do
 
-    let compiledCode = CCommon.generateCode True program
+    let compiledCode = CCommon.generateCode (CCommon.Options True myBuiltins) program
 
     let destPath     = buildDir </>
                        takeBaseName srcPath ++ ".cpp"

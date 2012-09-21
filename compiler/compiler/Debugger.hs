@@ -6,7 +6,7 @@ import qualified Types.Semantic as Sem
 import qualified Types.Syntax as Syn
 import Stages.Analyze (syntaxToSemantic)
 import Stages.Backend
-import Stages.Backends.CCommon (generateCode)
+import Stages.Backends.CCommon (generateCode, Options(..), commonCBuiltins)
 import Stages.Parser (translate)
 import Text.ParserCombinators.Parsec (parse)
 
@@ -42,7 +42,7 @@ setupMainWindow = do
                 let syntax      = syntaxToString program
                 let (Right sem) = syntaxToSemantic CPC program
                 let semantic    = semanticToString sem
-                let gen         = generateCode False sem
+                let gen         = generateCode (Options False commonCBuiltins) sem
                 textBufferSetText syntaxTextB   syntax
                 textBufferSetText semanticTextB semantic
                 textBufferSetText genTextB      gen
