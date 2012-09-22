@@ -99,10 +99,10 @@ sketchCode = unlines
     , "void setup() {"
     , "    Serial.begin(9600);"
     , "    multiToneSetup();"
+    , "    run();"
     , "}"
     , ""
     , "void loop() {"
-    , "    run();"
     , "}"
     ]
 
