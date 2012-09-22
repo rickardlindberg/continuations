@@ -1,37 +1,33 @@
-let main =
-    \() -> playSong exit
+let main = \() ->
+    let break = \(k) -> setTempo 100 \() -> repeat 4 (\(k) -> setBeat1 S_ k) k
+    in     cScale
+    \() -> break
+    \() -> puppets
+    \() -> break
+    exit
 
-let playSong =
-    \(k) -> playCScale
-    \()  -> repeat 3    playMasters
-    \()  -> repeat 1000 playSilence
-    \()  -> k
-
-let playCScale =
+let cScale =
     \(k) -> setBeat1 C4
-    \()  -> setBeat1 D4
-    \()  -> setBeat1 E4
-    \()  -> setBeat1 F4
-    \()  -> setBeat1 G4
-    \()  -> setBeat1 A4
-    \()  -> setBeat1 B4
-    \()  -> setBeat1 C5
+        \()  -> setBeat1 D4
+            \()  -> setBeat1 E4
+                \()  -> setBeat1 F4
+                    \()  -> setBeat1 G4
+                        \()  -> setBeat1 A4
+                            \()  -> setBeat1 B4
+                                \()  -> setBeat1 C5
+                            \()  -> setBeat1 B4
+                        \()  -> setBeat1 A4
+                    \()  -> setBeat1 G4
+                \()  -> setBeat1 F4
+            \()  -> setBeat1 E4
+        \()  -> setBeat1 D4
+    \()  -> setBeat1 C4
+    k
 
-    \()  -> setBeat2 C4 C4
-    \()  -> setBeat2 D4 D4
-    \()  -> setBeat2 E4 E4
-    \()  -> setBeat2 F4 F4
-    \()  -> setBeat2 G4 G4
-    \()  -> setBeat2 A4 A4
-    \()  -> setBeat2 B4 B4
-    \()  -> setBeat2 C5 C5
-
-    \()  -> k
-
-let playMasters =
-    \(k) -> setTempo 140
-    \()  -> masterIntro
-    \()  -> repeat 2 masterDesc
+let puppets =
+    \(k) -> setTempo 200
+    \()  -> puppetsIntro
+    \()  -> repeat 2 puppetsDesc
     \()  -> masterDescFoo
     \()  -> setBeat1 E3
     \()  -> setBeat1 E3
@@ -39,7 +35,7 @@ let playMasters =
     \()  -> setBeat1 E3
     k
 
-let masterIntro =
+let puppetsIntro =
     \(k) -> setBeat3 E3 E4 B4
     \()  -> setBeat3 C_ C_ C_
     \()  -> setBeat3 S_ S_ S_
@@ -47,12 +43,12 @@ let masterIntro =
     \()  -> masterPowerDesc
     k
 
-let masterDesc =
-    \(k) -> masterDesc1
-    \()  -> masterDesc2
+let puppetsDesc =
+    \(k) -> puppetsDesc1
+    \()  -> puppetsDesc2
     k
 
-let masterDesc1 =
+let puppetsDesc1 =
     \(k) -> setBeat1 E3
     \()  -> setBeat1 E3
         \()  -> setBeat1 E4
@@ -75,7 +71,7 @@ let masterPowerDesc =
     \()  -> setBeat2 C_  C_
     k
 
-let masterDesc2 =
+let puppetsDesc2 =
     \(k) -> setBeat1 E3
     \()  -> setBeat1 E3
         \()  -> setBeat1 B4
@@ -116,9 +112,6 @@ let masterDescFoo = \(k) ->
     \()  -> setBeat1 E3
     \()  -> setBeat1 E3
     k
-
-let playSilence =
-    \(k) -> setBeat1 S_ k
 
 let repeat =
     \(times, playFn, k) ->
