@@ -28,7 +28,7 @@ let puppets =
     \(k) -> setTempo 200
     \()  -> puppetsIntro
     \()  -> repeat 2 puppetsDesc
-    \()  -> masterQuietRiff
+    \()  -> repeat 2 masterQuietRiff
     \()  -> setBeat2 E3 B4
     \()  -> setBeat2 C_ C_
     \()  -> setBeat2 C_ C_
