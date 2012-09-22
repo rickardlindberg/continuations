@@ -3,108 +3,104 @@ module Stages.Backends.CCommon where
 import CodeGenHelper
 import Control.Monad
 import Control.Monad.Trans.State.Lazy as ST
-import Data.List
 import Data.Maybe
+import qualified Data.Map as M
 import qualified Types.Builtin as B
 import qualified Types.Types as T
 import Types.Semantic
 
 data CCommonBuiltin = CCommonBuiltin
-    { name  :: String
-    , type_ :: T.Type
+    { type_ :: T.Type
     , gen   :: ST.State AccumulatedCode ()
     }
 
-commonCBuiltins =
-    [ CCommonBuiltin
-        "times" (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
-            writeLine "k = arg2;"
-            writeLine "next_args = create_args(1);"
-            writeLine "args_set(next_args, 0, const_number(arg0->value * arg1->value));"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "plus" (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
-            writeLine "k = arg2;"
-            writeLine "next_args = create_args(1);"
-            writeLine "args_set(next_args, 0, const_number(arg0->value + arg1->value));"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "minus" (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
-            writeLine "k = arg2;"
-            writeLine "next_args = create_args(1);"
-            writeLine "args_set(next_args, 0, const_number(arg0->value - arg1->value));"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "sqrt" (T.Function [T.Number, T.Function [T.Number]]) $ do
-            addInclude "<math.h>"
-            writeLine "k = arg1;"
-            writeLine "next_args = create_args(1);"
-            writeLine "args_set(next_args, 0, const_number(sqrt(arg0->value)));"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "printNumber" (T.Function [T.Number, T.Function []]) $ do
-            addInclude "<stdio.h>"
-            writeLine "k = arg1;"
-            writeLine "next_args = create_args(0);"
-            writeLine "printf(\"%f\\n\", arg0->value);"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "exit" (T.Function []) $ do
-            writeLine "return NULL;"
-    , CCommonBuiltin
-        "isZero?" (T.Function [T.Number, T.Function [T.Number], T.Function [T.Number]]) $ do
-            writeLine "next_args = create_args(0);"
-            writeLine "if (arg0->value == 0) {"
-            writeLine "    k = arg1;"
-            writeLine "} else {"
-            writeLine "    k = arg2;"
-            writeLine "}"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "setTempo" (T.Function [T.Number, T.Function []]) $ do
-            addInclude "<stdio.h>"
-            writeLine "k = arg1;"
-            writeLine "next_args = create_args(0);"
-            writeLine "printf(\"set tempo: %f\\n\", arg0->value);"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "setBeat1" (T.Function [T.Number, T.Function []]) $ do
-            addInclude "<stdio.h>"
-            writeLine "k = arg1;"
-            writeLine "next_args = create_args(0);"
-            writeLine "printf(\"set beat 1: %f\\n\", arg0->value);"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "setBeat2" (T.Function [T.Number, T.Number, T.Function []]) $ do
-            addInclude "<stdio.h>"
-            writeLine "k = arg2;"
-            writeLine "next_args = create_args(0);"
-            writeLine "printf(\"set beat 2: %f, %f\\n\", arg0->value, arg1->value);"
-            writeLine "return create_call(k, next_args);"
-    , CCommonBuiltin
-        "setBeat3" (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
-            addInclude "<stdio.h>"
-            writeLine "k = arg3;"
-            writeLine "next_args = create_args(0);"
-            writeLine "printf(\"set beat 3: %f, %f, %f\\n\", arg0->value, arg1->value, arg2->value);"
-            writeLine "return create_call(k, next_args);"
+commonCBuiltins :: M.Map String CCommonBuiltin
+commonCBuiltins = M.fromList $
+    [ ("times", CCommonBuiltin (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
+        writeLine "k = arg2;"
+        writeLine "next_args = create_args(1);"
+        writeLine "args_set(next_args, 0, const_number(arg0->value * arg1->value));"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("plus", CCommonBuiltin (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
+        writeLine "k = arg2;"
+        writeLine "next_args = create_args(1);"
+        writeLine "args_set(next_args, 0, const_number(arg0->value + arg1->value));"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("minus", CCommonBuiltin (T.Function [T.Number, T.Number, T.Function [T.Number]]) $ do
+        writeLine "k = arg2;"
+        writeLine "next_args = create_args(1);"
+        writeLine "args_set(next_args, 0, const_number(arg0->value - arg1->value));"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("sqrt", CCommonBuiltin (T.Function [T.Number, T.Function [T.Number]]) $ do
+        addInclude "<math.h>"
+        writeLine "k = arg1;"
+        writeLine "next_args = create_args(1);"
+        writeLine "args_set(next_args, 0, const_number(sqrt(arg0->value)));"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("printNumber", CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
+        addInclude "<stdio.h>"
+        writeLine "k = arg1;"
+        writeLine "next_args = create_args(0);"
+        writeLine "printf(\"%f\\n\", arg0->value);"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("exit", CCommonBuiltin (T.Function []) $ do
+        writeLine "return NULL;"
+    )
+    , ("isZero?", CCommonBuiltin (T.Function [T.Number, T.Function [T.Number], T.Function [T.Number]]) $ do
+        writeLine "next_args = create_args(0);"
+        writeLine "if (arg0->value == 0) {"
+        writeLine "    k = arg1;"
+        writeLine "} else {"
+        writeLine "    k = arg2;"
+        writeLine "}"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("setTempo", CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
+        addInclude "<stdio.h>"
+        writeLine "k = arg1;"
+        writeLine "next_args = create_args(0);"
+        writeLine "printf(\"set tempo: %f\\n\", arg0->value);"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("setBeat1", CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
+        addInclude "<stdio.h>"
+        writeLine "k = arg1;"
+        writeLine "next_args = create_args(0);"
+        writeLine "printf(\"set beat 1: %f\\n\", arg0->value);"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("setBeat2", CCommonBuiltin (T.Function [T.Number, T.Number, T.Function []]) $ do
+        addInclude "<stdio.h>"
+        writeLine "k = arg2;"
+        writeLine "next_args = create_args(0);"
+        writeLine "printf(\"set beat 2: %f, %f\\n\", arg0->value, arg1->value);"
+        writeLine "return create_call(k, next_args);"
+    )
+    , ("setBeat3", CCommonBuiltin (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
+        addInclude "<stdio.h>"
+        writeLine "k = arg3;"
+        writeLine "next_args = create_args(0);"
+        writeLine "printf(\"set beat 3: %f, %f, %f\\n\", arg0->value, arg1->value, arg2->value);"
+        writeLine "return create_call(k, next_args);"
+    )
     ]
 
-extendBuiltins :: [CCommonBuiltin] -> [CCommonBuiltin] -> [CCommonBuiltin]
-extendBuiltins original extension = extension ++ newOriginal
-    where
-        newOriginal = filter notInExtension original
-        notInExtension (CCommonBuiltin name _ _) = null $ filter (hasName name) extension
-        hasName name (CCommonBuiltin n _ _) = name == n
+extendBuiltins :: M.Map String CCommonBuiltin -> M.Map String CCommonBuiltin -> M.Map String CCommonBuiltin
+extendBuiltins original extension = M.union extension original
 
-exportBuiltins :: [CCommonBuiltin] -> [B.Builtin]
-exportBuiltins = map toGeneralBuiltin
+exportBuiltins :: M.Map String CCommonBuiltin -> [B.Builtin]
+exportBuiltins = M.foldrWithKey toGeneralBuiltin []
     where
-        toGeneralBuiltin (CCommonBuiltin name type_ _) = B.Builtin name type_
+        toGeneralBuiltin name (CCommonBuiltin type_ _) rest = B.Builtin name type_ : rest
 
 data Options = Options
     { isLibrary :: Bool
-    , builtinsX :: [CCommonBuiltin]
+    , builtinsX :: M.Map String CCommonBuiltin
     }
 
 generateCode :: Options -> Program -> String
@@ -196,4 +192,4 @@ outMain options = do
 cType T.Number       = "Number"
 cType (T.Function _) = "Closure"
 
-writeBuiltinCode builtinName builtins = gen $ fromJust $ find (\x -> name x == builtinName) builtins
+writeBuiltinCode builtinName builtins = gen $ fromJust $ M.lookup builtinName builtins

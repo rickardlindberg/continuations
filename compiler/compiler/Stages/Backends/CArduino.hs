@@ -1,6 +1,7 @@
 module Stages.Backends.CArduino where
 
 import CodeGenHelper
+import qualified Data.Map as M
 import qualified Stages.Backends.CCommon as CCommon
 import qualified Types.Types as T
 import System
@@ -9,35 +10,35 @@ import System.FilePath
 import System.Process
 import Types.Semantic
 
-builtins = CCommon.extendBuiltins CCommon.commonCBuiltins
-    [ CCommon.CCommonBuiltin
-        "setTempo" (T.Function [T.Number, T.Function []]) $ do
+builtins = CCommon.extendBuiltins CCommon.commonCBuiltins $ M.fromList
+    [ ("setTempo", CCommon.CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
             writeLine "setTempo((unsigned int)arg0->value);"
             writeLine "return create_call(k, next_args);"
-    , CCommon.CCommonBuiltin
-        "setBeat1" (T.Function [T.Number, T.Function []]) $ do
+    )
+    , ("setBeat1", CCommon.CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
             writeLine "setTone1((unsigned int)arg0->value);"
             writeLine "return create_call(k, next_args);"
-    , CCommon.CCommonBuiltin
-        "setBeat2" (T.Function [T.Number, T.Number, T.Function []]) $ do
+    )
+    , ("setBeat2", CCommon.CCommonBuiltin (T.Function [T.Number, T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg2;"
             writeLine "next_args = create_args(0);"
             writeLine "setTone2((unsigned int)arg0->value, (unsigned int)arg1->value);"
             writeLine "return create_call(k, next_args);"
-    , CCommon.CCommonBuiltin
-        "setBeat3" (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
+    )
+    , ("setBeat3", CCommon.CCommonBuiltin (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg3;"
             writeLine "next_args = create_args(0);"
             writeLine "setTone3((unsigned int)arg0->value, (unsigned int)arg1->value, (unsigned int)arg2->value);"
             writeLine "return create_call(k, next_args);"
+    )
     ]
 
 exportedBuiltins = CCommon.exportBuiltins builtins
