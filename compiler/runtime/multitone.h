@@ -3,10 +3,10 @@
 
 #include "WProgram.h"
 
-void multiToneSetup();
-void setTempo(unsigned int t);
-void setTone1(float one);
-void setTone2(float one, float two);
-void setTone3(float one, float two, float three);
+void multitoneSetup();
+void multitoneSetTempo(unsigned int t);
+void multitoneSetOne(float one);
+void multitoneSetTwo(float one, float two);
+void multitoneSetThree(float one, float two, float three);
 
 #endif

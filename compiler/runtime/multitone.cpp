@@ -1,7 +1,10 @@
-// Adapted version of http://www.jeremyblum.com/2010/09/05/driving-5-speakers-simultaneously-with-an-arduino/
-
-//** ReacXion Source Code **//
-//** www.jeremyblum.com **//
+/*
+ * Adapted version of "Driving 5 Speakers Simultaneously with an Arduino".
+ * http://www.jeremyblum.com/2010/09/05/driving-5-speakers-simultaneously-with-an-arduino/
+ * ReacXion Source Code
+ * www.jeremyblum.com
+ *
+ */
 
 #include "WProgram.h"
 #include "multitone.h"
@@ -18,7 +21,27 @@ unsigned int counts[SIZE]     = {0, 0, 0};
 unsigned int targets[SIZE]    = {0, 0, 0};
 unsigned int tempo            = 250; // 120bpm
 
-void multiToneSetup() {
+void setTone(int i, float tone) {
+    if (tone == 0) {
+        pinsActive[i] = 0;
+    } else if (tone == 1) {
+        pinsActive[i] = 1;
+    } else {
+        pinsActive[i] = 1;
+        targets[i]    = (unsigned int)((1/tone)/(2*64*0.000001));
+        toggles[i]    = 0;
+        counts[i]     = 0;
+    }
+}
+
+void deactivateFrom(int index) {
+    int i;
+    for (i = index; i < SIZE; i++) {
+        pinsActive[i] = 0;
+    }
+}
+
+void multitoneSetup() {
     int i;
 
     /* First disable the timer overflow interrupt*/
@@ -58,45 +81,25 @@ void multiToneSetup() {
     }
 }
 
-void setTempo(unsigned int t) {
+void multitoneSetTempo(unsigned int t) {
     tempo = (unsigned int)(30000/t);
 }
 
-void setTone(int i, float tone) {
-    if (tone == 0) {
-        pinsActive[i] = 0;
-    } else if (tone == 1) {
-        pinsActive[i] = 1;
-    } else {
-        pinsActive[i] = 1;
-        targets[i]    = (unsigned int)((1/tone)/(2*64*0.000001));
-        toggles[i]    = 0;
-        counts[i]     = 0;
-    }
-}
-
-void clearFrom(int index) {
-    int i;
-    for (i = index; i < SIZE; i++) {
-        pinsActive[i] = 0;
-    }
-}
-
-void setTone1(float one) {
-    clearFrom(1);
+void multitoneSetOne(float one) {
+    deactivateFrom(1);
     setTone(0, one);
     delay(tempo);
 }
 
-void setTone2(float one, float two) {
-    clearFrom(2);
+void multitoneSetTwo(float one, float two) {
+    deactivateFrom(2);
     setTone(0, one);
     setTone(1, two);
     delay(tempo);
 }
 
-void setTone3(float one, float two, float three) {
-    clearFrom(3);
+void multitoneSetThree(float one, float two, float three) {
+    deactivateFrom(3);
     setTone(0, one);
     setTone(1, two);
     setTone(2, three);

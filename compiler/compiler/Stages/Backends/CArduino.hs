@@ -15,28 +15,28 @@ builtins = CCommon.extendBuiltins CCommon.commonCBuiltins $ M.fromList
             addInclude "\"multitone.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
-            writeLine "setTempo((unsigned int)arg0->value);"
+            writeLine "multitoneSetTempo((unsigned int)arg0->value);"
             writeLine "return create_call(k, next_args);"
     )
     , ("setBeat1", CCommon.CCommonBuiltin (T.Function [T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg1;"
             writeLine "next_args = create_args(0);"
-            writeLine "setTone1((unsigned int)arg0->value);"
+            writeLine "multitoneSetOne((unsigned int)arg0->value);"
             writeLine "return create_call(k, next_args);"
     )
     , ("setBeat2", CCommon.CCommonBuiltin (T.Function [T.Number, T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg2;"
             writeLine "next_args = create_args(0);"
-            writeLine "setTone2((unsigned int)arg0->value, (unsigned int)arg1->value);"
+            writeLine "multitoneSetTwo((unsigned int)arg0->value, (unsigned int)arg1->value);"
             writeLine "return create_call(k, next_args);"
     )
     , ("setBeat3", CCommon.CCommonBuiltin (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
             writeLine "k = arg3;"
             writeLine "next_args = create_args(0);"
-            writeLine "setTone3((unsigned int)arg0->value, (unsigned int)arg1->value, (unsigned int)arg2->value);"
+            writeLine "multitoneSetThree((unsigned int)arg0->value, (unsigned int)arg1->value, (unsigned int)arg2->value);"
             writeLine "return create_call(k, next_args);"
     )
     ]
@@ -99,7 +99,7 @@ sketchCode = unlines
     , ""
     , "void setup() {"
     , "    Serial.begin(9600);"
-    , "    multiToneSetup();"
+    , "    multitoneSetup();"
     , "    run();"
     , "}"
     , ""
