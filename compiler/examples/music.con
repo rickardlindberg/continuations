@@ -41,9 +41,9 @@ let playMasters =
 
 let masterIntro =
     \(k) -> setBeat3 E3 E4 B4
-    \()  -> setBeat3 E3 E4 B4
-    \()  -> setBeat3 E3 E4 B4
-    \()  -> setBeat3 E3 E4 B4
+    \()  -> setBeat3 C_ C_ C_
+    \()  -> setBeat3 S_ S_ S_
+    \()  -> setBeat3 S_ S_ S_
     \()  -> masterPowerDesc
     k
 
@@ -65,14 +65,14 @@ let masterDesc1 =
     k
 
 let masterPowerDesc =
-    \(k) -> setBeat2 D4 A4
-    \()  -> setBeat2 D4 A4
+    \(k) -> setBeat2 D4  A4
+    \()  -> setBeat2 C_  C_
     \()  -> setBeat2 CS4 GS4
-    \()  -> setBeat2 CS4 GS4
-    \()  -> setBeat2 C4 G4
-    \()  -> setBeat2 C4 G4
-    \()  -> setBeat2 C4 G4
-    \()  -> setBeat2 C4 G4
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C4  G4
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C_  C_
     k
 
 let masterDesc2 =
@@ -118,7 +118,7 @@ let masterDescFoo = \(k) ->
     k
 
 let playSilence =
-    \(k) -> setBeat1 SILENCE k
+    \(k) -> setBeat1 S_ k
 
 let repeat =
     \(times, playFn, k) ->
@@ -128,6 +128,9 @@ let repeat =
         in  isZero? times
                 k
                 continue
+
+let S_      = 0
+let C_      = 1
 
 let B0      = 31
 let C1      = 33
@@ -218,5 +221,3 @@ let C8      = 4186
 let CS8     = 4435
 let D8      = 4699
 let DS8     = 4978
-let SILENCE = 0
-let CONT    = 0
