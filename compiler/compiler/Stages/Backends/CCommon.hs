@@ -74,6 +74,20 @@ commonCBuiltins =
             writeLine "next_args = create_args(0);"
             writeLine "printf(\"set beat 1: %f\\n\", arg0->value);"
             writeLine "return create_call(k, next_args);"
+    , CCommonBuiltin
+        "setBeat2" (T.Function [T.Number, T.Number, T.Function []]) $ do
+            addInclude "<stdio.h>"
+            writeLine "k = arg2;"
+            writeLine "next_args = create_args(0);"
+            writeLine "printf(\"set beat 2: %f, %f\\n\", arg0->value, arg1->value);"
+            writeLine "return create_call(k, next_args);"
+    , CCommonBuiltin
+        "setBeat3" (T.Function [T.Number, T.Number, T.Number, T.Function []]) $ do
+            addInclude "<stdio.h>"
+            writeLine "k = arg3;"
+            writeLine "next_args = create_args(0);"
+            writeLine "printf(\"set beat 3: %f, %f, %f\\n\", arg0->value, arg1->value, arg2->value);"
+            writeLine "return create_call(k, next_args);"
     ]
 
 exportBuiltins :: [CCommonBuiltin] -> [B.Builtin]
