@@ -90,6 +90,13 @@ commonCBuiltins =
             writeLine "return create_call(k, next_args);"
     ]
 
+extendBuiltins :: [CCommonBuiltin] -> [CCommonBuiltin] -> [CCommonBuiltin]
+extendBuiltins original extension = extension ++ newOriginal
+    where
+        newOriginal = filter notInExtension original
+        notInExtension (CCommonBuiltin name _ _) = null $ filter (hasName name) extension
+        hasName name (CCommonBuiltin n _ _) = name == n
+
 exportBuiltins :: [CCommonBuiltin] -> [B.Builtin]
 exportBuiltins = map toGeneralBuiltin
     where

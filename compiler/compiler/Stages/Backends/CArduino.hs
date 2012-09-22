@@ -9,7 +9,7 @@ import System.FilePath
 import System.Process
 import Types.Semantic
 
-builtins =
+builtins = CCommon.extendBuiltins CCommon.commonCBuiltins
     [ CCommon.CCommonBuiltin
         "setTempo" (T.Function [T.Number, T.Function []]) $ do
             addInclude "\"multitone.h\""
@@ -38,7 +38,7 @@ builtins =
             writeLine "next_args = create_args(0);"
             writeLine "setTone3((unsigned int)arg0->value, (unsigned int)arg1->value, (unsigned int)arg2->value);"
             writeLine "return create_call(k, next_args);"
-    ] ++ CCommon.commonCBuiltins
+    ]
 
 exportedBuiltins = CCommon.exportBuiltins builtins
 
