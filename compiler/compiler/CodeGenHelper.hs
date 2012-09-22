@@ -23,7 +23,12 @@ addInclude include = ST.modify (\s -> s { includes = update (includes s) })
                  | otherwise        = x ++ [include]
 
 writeLine :: String -> ST.State AccumulatedCode ()
-writeLine line = ST.modify (\s -> s { bodyCode = bodyCode s ++ concatMap (const "    ") [1..indentCount s] ++ line ++ "\n" })
+writeLine line = ST.modify (\s -> s { bodyCode = bodyCode s ++ newLine s })
+    where
+        newLine   s = indentStr s ++ line ++ "\n"
+        indentStr s = if null line
+                          then ""
+                          else concatMap (const "    ") [1..indentCount s]
 
 indented :: ST.State AccumulatedCode () -> ST.State AccumulatedCode ()
 indented gen = indent >> gen >> dedent
