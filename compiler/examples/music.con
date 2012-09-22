@@ -29,7 +29,7 @@ let playCScale =
     \()  -> k
 
 let playMasters =
-    \(k) -> setTempo 200
+    \(k) -> setTempo 140
     \()  -> masterIntro
     \()  -> repeat 2 masterDesc
     \()  -> masterDescFoo
@@ -40,18 +40,11 @@ let playMasters =
     k
 
 let masterIntro =
-    \(k) -> setBeat1 E4
-    \()  -> setBeat1 E4
-    \()  -> setBeat1 E4
-    \()  -> setBeat1 E4
-    \()  -> setBeat1 D4
-    \()  -> setBeat1 D4
-    \()  -> setBeat1 CS4
-    \()  -> setBeat1 CS4
-    \()  -> setBeat1 C4
-    \()  -> setBeat1 C4
-    \()  -> setBeat1 C4
-    \()  -> setBeat1 C4
+    \(k) -> setBeat3 E3 E4 B4
+    \()  -> setBeat3 E3 E4 B4
+    \()  -> setBeat3 E3 E4 B4
+    \()  -> setBeat3 E3 E4 B4
+    \()  -> masterPowerDesc
     k
 
 let masterDesc =
@@ -68,14 +61,18 @@ let masterDesc1 =
         \()  -> setBeat1 DS4
     \()  -> setBeat1 E3
     \()  -> setBeat1 E3
-        \()  -> setBeat1 D4
-        \()  -> setBeat1 D4
-        \()  -> setBeat1 CS4
-        \()  -> setBeat1 CS4
-        \()  -> setBeat1 C4
-        \()  -> setBeat1 C4
-        \()  -> setBeat1 C4
-        \()  -> setBeat1 C4
+    \()  -> masterPowerDesc
+    k
+
+let masterPowerDesc =
+    \(k) -> setBeat2 D4 A4
+    \()  -> setBeat2 D4 A4
+    \()  -> setBeat2 CS4 GS4
+    \()  -> setBeat2 CS4 GS4
+    \()  -> setBeat2 C4 G4
+    \()  -> setBeat2 C4 G4
+    \()  -> setBeat2 C4 G4
+    \()  -> setBeat2 C4 G4
     k
 
 let masterDesc2 =
@@ -101,9 +98,9 @@ let masterDescFoo = \(k) ->
     let bamBam       = \(k) -> setBeat1 E3
                        \()  -> setBeat1 F3
                        k
-    let bamBamBam    = \(k) -> setBeat1 G3
-                       \()  -> setBeat1 FS3
-                       \()  -> setBeat1 E3
+    let bamBamBam    = \(k) -> setBeat2 G3  D4
+                       \()  -> setBeat2 FS3 CS4
+                       \()  -> setBeat2 E3  B4
                        k
     in      bamBam \() -> setBeat1 B4
     \()  -> bamBam \() -> setBeat1 C4
