@@ -1,13 +1,13 @@
-let main = \() ->
-    let break = \(k) -> setTempo 100 \() -> repeat 4 (\(k) -> setBeat1 S_ k) k
-    in     cScale
+let main =
+    \() -> cScale
     \() -> break
     \() -> puppets
     \() -> break
     exit
 
 let cScale =
-    \(k) -> setBeat1 C4
+    \(k) -> setTempo 100
+    \() -> setBeat1 C4
         \()  -> setBeat1 D4
             \()  -> setBeat1 E4
                 \()  -> setBeat1 F4
@@ -28,11 +28,11 @@ let puppets =
     \(k) -> setTempo 200
     \()  -> puppetsIntro
     \()  -> repeat 2 puppetsDesc
-    \()  -> masterDescFoo
-    \()  -> setBeat1 E3
-    \()  -> setBeat1 E3
-    \()  -> setBeat1 E3
-    \()  -> setBeat1 E3
+    \()  -> masterQuietRiff
+    \()  -> setBeat2 E3 B4
+    \()  -> setBeat2 C_ C_
+    \()  -> setBeat2 C_ C_
+    \()  -> setBeat2 C_ C_
     k
 
 let puppetsIntro =
@@ -60,17 +60,6 @@ let puppetsDesc1 =
     \()  -> masterPowerDesc
     k
 
-let masterPowerDesc =
-    \(k) -> setBeat2 D4  A4
-    \()  -> setBeat2 C_  C_
-    \()  -> setBeat2 CS4 GS4
-    \()  -> setBeat2 C_  C_
-    \()  -> setBeat2 C4  G4
-    \()  -> setBeat2 C_  C_
-    \()  -> setBeat2 C_  C_
-    \()  -> setBeat2 C_  C_
-    k
-
 let puppetsDesc2 =
     \(k) -> setBeat1 E3
     \()  -> setBeat1 E3
@@ -90,27 +79,44 @@ let puppetsDesc2 =
     \()  -> setBeat1 E3
     k
 
-let masterDescFoo = \(k) ->
-    let bamBam       = \(k) -> setBeat1 E3
-                       \()  -> setBeat1 F3
+let masterPowerDesc =
+    \(k) -> setBeat2 D4  A4
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 CS4 GS4
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C4  G4
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C_  C_
+    \()  -> setBeat2 C_  C_
+    k
+
+let masterQuietRiff = \(k) ->
+    let bamBamAnd    = \(note, k) -> setBeat1 E3
+                       \()        -> setBeat1 F3
+                       \()        -> setBeat1 note
                        k
     let bamBamBam    = \(k) -> setBeat2 G3  D4
                        \()  -> setBeat2 FS3 CS4
                        \()  -> setBeat2 E3  B4
                        k
-    in      bamBam \() -> setBeat1 B4
-    \()  -> bamBam \() -> setBeat1 C4
-    \()  -> bamBam \() -> setBeat1 CS4
-    \()  -> bamBam \() -> setBeat1 C4
-    \()  -> bamBam \() -> setBeat1 B4
+    in      bamBamAnd B4
+    \()  -> bamBamAnd C4
+    \()  -> bamBamAnd CS4
+    \()  -> bamBamAnd C4
+    \()  -> bamBamAnd B4
     \()  -> setBeat1 B4
-    \()  -> bamBam \() -> setBeat1 B4
-    \()  -> bamBam \() -> setBeat1 C4
+    \()  -> bamBamAnd B4
+    \()  -> bamBamAnd C4
     \()  -> setBeat1 E3
     \()  -> setBeat1 E3
     \()  -> repeat 2 bamBamBam
     \()  -> setBeat1 E3
     \()  -> setBeat1 E3
+    k
+
+let break =
+    \(k) -> setTempo 100
+    \()  -> repeat 4 (\(k) -> setBeat1 S_ k)
     k
 
 let repeat =
